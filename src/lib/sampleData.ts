@@ -1,0 +1,34 @@
+export const products = [
+  {
+    name: "Classic T-Shirt",
+    slug: "classic-t-shirt",
+    category: "Clothing",
+    images: [
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30"
+    ],
+    brand: "NextWear",
+    description: "A classic cotton t-shirt for everyday comfort.",
+    stock: 100,
+    price: 19.99,
+    rating: 4.5,
+    numReviews: 12,
+    isFeatured: true,
+    createdAt: new Date()
+  },
+  {
+    name: "Denim Jeans",
+    slug: "denim-jeans",
+    category: "Clothing",
+    images: [
+      "https://images.unsplash.com/photo-1512436991641-6745cdb1723f"
+    ],
+    brand: "DenimPro",
+    description: "Stylish and durable denim jeans for all occasions.",
+    stock: 50,
+    price: 49.99,
+    rating: 4.7,
+    numReviews: 8,
+    isFeatured: false,
+    createdAt: new Date()
+  },
+];
