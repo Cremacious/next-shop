@@ -1,53 +1,54 @@
 'use client';
 import ProductCard from '@/components/products/product-card';
 import { useState } from 'react';
+import { products } from '@/lib/sampleData';
 
 // Mock data
-const products = [
-  {
-    id: 1,
-    title: 'Classic T-Shirt',
-    price: 19.99,
-    category: 'Clothing',
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30',
-  },
-  {
-    id: 2,
-    title: 'Wireless Headphones',
-    price: 89.99,
-    category: 'Electronics',
-    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8',
-  },
-  {
-    id: 3,
-    title: 'Running Shoes',
-    price: 59.99,
-    category: 'Footwear',
-    image: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308',
-  },
-  {
-    id: 4,
-    title: 'Smart Watch',
-    price: 129.99,
-    category: 'Electronics',
-    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9',
-  },
-  {
-    id: 5,
-    title: 'Leather Wallet',
-    price: 29.99,
-    category: 'Accessories',
-    image: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca',
-  },
-  {
-    id: 6,
-    title: 'Sunglasses',
-    price: 24.99,
-    category: 'Accessories',
-    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
-  },
-  // ...add more products as needed
-];
+// const products = [
+//   {
+//     id: 1,
+//     title: 'Classic T-Shirt',
+//     price: 19.99,
+//     category: 'Clothing',
+//     image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30',
+//   },
+//   {
+//     id: 2,
+//     title: 'Wireless Headphones',
+//     price: 89.99,
+//     category: 'Electronics',
+//     image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8',
+//   },
+//   {
+//     id: 3,
+//     title: 'Running Shoes',
+//     price: 59.99,
+//     category: 'Footwear',
+//     image: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308',
+//   },
+//   {
+//     id: 4,
+//     title: 'Smart Watch',
+//     price: 129.99,
+//     category: 'Electronics',
+//     image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9',
+//   },
+//   {
+//     id: 5,
+//     title: 'Leather Wallet',
+//     price: 29.99,
+//     category: 'Accessories',
+//     image: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca',
+//   },
+//   {
+//     id: 6,
+//     title: 'Sunglasses',
+//     price: 24.99,
+//     category: 'Accessories',
+//     image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
+//   },
+//   // ...add more products as needed
+// ];
 
 const categories = [
   'All',
@@ -66,7 +67,7 @@ export default function ProductsPage() {
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
       selectedCategory === 'All' || product.category === selectedCategory;
-    const matchesSearch = product.title
+    const matchesSearch = product.name
       .toLowerCase()
       .includes(search.toLowerCase());
     const matchesPrice = product.price >= minPrice && product.price <= maxPrice;
@@ -131,7 +132,7 @@ export default function ProductsPage() {
           </div>
         ) : (
           filteredProducts.map((product) => (
-            <ProductCard key={product.id} {...product} />
+            <ProductCard key={product.id} product={product} />
           ))
         )}
       </div>

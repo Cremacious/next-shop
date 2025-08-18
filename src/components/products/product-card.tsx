@@ -1,14 +1,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '../ui/button';
+import { ProductType } from '@/lib/types/product.type';
 
-export default function ProductCard() {
+export default function ProductCard({ product }: { product: ProductType }) {
   return (
     <div className="max-w-md mx-auto rounded-md overflow-hidden shadow-md hover:shadow-lg">
       <div className="relative">
         <Image
           className="w-full"
-          src="https://images.unsplash.com/photo-1523275335684-37898b6baf30"
+          src={product.images[0]}
           alt="Product Image"
           width={640}
           height={426}
@@ -18,18 +19,15 @@ export default function ProductCard() {
         </div>
       </div>
       <div className="p-4">
-        <h3 className="text-lg font-medium mb-2">Product Title</h3>
-        <p className="text-gray-600 text-sm mb-4">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vitae
-          ante vel eros fermentum faucibus sit amet euismod lorem.
-        </p>
+        <h3 className="text-lg font-medium mb-2">{product.name}</h3>
+        <p className="text-gray-600 text-sm mb-4">{product.description}</p>
         <div className="flex items-center justify-between">
-          <span className="font-bold text-lg">$19.99</span>
+          <span className="font-bold text-lg">${product.price}</span>
           <Button
             asChild
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           >
-            <Link href="/products/5">View</Link>
+            <Link href={`/products/${product.slug}`}>View</Link>
           </Button>
         </div>
       </div>

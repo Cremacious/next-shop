@@ -1,7 +1,16 @@
-
 import Image from 'next/image';
+import { ProductType } from '@/lib/types/product.type';
 
-export default function ProductDetailsPage() {
+export default async function ProductDetailsPage() {
+  
+
+// {
+//   params,
+// }: {
+//   params: { productSlug: string };
+// }
+
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center min-h-screen bg-white">
       <div className="flex flex-col md:flex-row -mx-4">
