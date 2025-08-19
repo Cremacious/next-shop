@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ProductType } from '@/lib/types/product.type';
+// import { ProductType } from '@/lib/types/product.type';
 
 export default async function ProductDetailsPage() {
   
