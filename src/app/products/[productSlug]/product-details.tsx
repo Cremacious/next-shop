@@ -2,18 +2,18 @@
 import Image from 'next/image';
 import { ProductType } from '@/lib/types/product.type';
 import { useState } from 'react';
-import { useCartStore } from '@/stores/useCartStore';
 import { Button } from '@/components/ui/button';
+import { addItemToCart } from '@/lib/actions/cart.actions';
 
 export default function ProductDetails({ product }: { product: ProductType }) {
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
   const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
-  const addToCart = useCartStore((state) => state.addToCart);
 
   const handleAddToCart = () => {
-    // console.log('Add to cart clicked:', product, selectedColor, selectedSize);
-    addToCart({
-      ...product,
+    addItemToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
       color: selectedColor,
       size: selectedSize,
       quantity: 1,
