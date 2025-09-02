@@ -86,6 +86,8 @@ model Product {
  numReviews  Int       @default(0)
  isFeatured  Boolean   @default(false)
  createdAt   DateTime  @default(now())
+ colors      String[]
+ sizes      String[]
  orderItems  OrderItem[]
  reviews     Review[]
 }

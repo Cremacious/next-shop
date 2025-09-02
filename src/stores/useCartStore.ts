@@ -5,6 +5,8 @@ interface CartItem {
   id: string;
   name: string;
   price: number;
+  color: string;
+  size: string;
   quantity: number;
   image?: string;
 }
@@ -63,9 +65,7 @@ export const useCartStore = create<CartState>()(
 //   const removeFromCart = useCartStore((state) => state.removeFromCart);
 //   const updateQuantity = useCartStore((state) => state.updateQuantity);
 //   const getTotal = useCartStore((state) => state.getTotal);
-  
-  
-  
+
 //          <div>
 //               {myCart.map((item) => (
 //                 <div key={item.id}>
@@ -85,4 +85,3 @@ export const useCartStore = create<CartState>()(
 //               ))}
 //               <div>Total: ${getTotal().toFixed(2)}</div>
 //             </div>
-            

@@ -1,6 +1,8 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
-    <footer className="bg-white text-slate-800 py-10">
+    <footer className="bg-white text-slate-800 py-10 shadow-[0_-8px_24px_-8px_rgba(0,0,0,0.10)]">
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Brand & Description */}
         <div>
@@ -68,30 +70,30 @@ export default function Footer() {
           <div className="font-semibold mb-2">Categories</div>
           <ul className="space-y-1 text-sm">
             <li>
-              <a href="/products?cat=clothing" className="hover:text-blue-400">
+              <Link href="/products?cat=clothing" className="hover:text-blue-400">
                 Clothing
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/products?cat=electronics"
                 className="hover:text-blue-400"
               >
                 Electronics
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/products?cat=accessories"
                 className="hover:text-blue-400"
               >
                 Accessories
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/products?cat=footwear" className="hover:text-blue-400">
+              <Link href="/products?cat=footwear" className="hover:text-blue-400">
                 Footwear
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
