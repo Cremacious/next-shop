@@ -9,5 +9,9 @@ export default async function ProductDetailsPage({
   const { productSlug } = await params;
   const product = await getProductBySlug(productSlug);
 
-  return <ProductDetails product={product} />;
+  return (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex min-h-screen  bg-gray-50">
+      <ProductDetails product={product} />
+    </div>
+  );
 }

@@ -5,19 +5,13 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import AddToCartButton from '@/components/cart/add-to-cart-button';
 
-
-export default function ProductDetails({
-  product,
-}: {
-  product: ProductType;
-
-}) {
+export default function ProductDetails({ product }: { product: ProductType }) {
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
   const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center min-h-screen bg-white">
-      <div className="flex flex-col md:flex-row -mx-4">
+    <div className="md:mt-8">
+      <div className="flex flex-col md:flex-row mt-4">
         <div className="md:flex-1 px-4">
           <div className="h-[460px] rounded-lg  dark:bg-gray-700 mb-4">
             <Image

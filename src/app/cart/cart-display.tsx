@@ -12,9 +12,13 @@ export default function CartDisplay({}) {
     id: string,
     color: string,
     size: string,
-    quantity: number
+    newQuantity: number
   ) => {
-    updateItemQuantity(id, color, size, quantity);
+    if (newQuantity < 1) {
+      removeFromCart(id, color, size);
+    } else {
+      updateItemQuantity(id, color, size, newQuantity);
+    }
   };
 
   const handleRemove = (id: string, color: string, size: string) => {
