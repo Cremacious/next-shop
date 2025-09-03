@@ -1,11 +1,8 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { getUserCart } from '@/lib/actions/cart.actions';
 
-export default async function Home() {
-  const cartItems = await getUserCart();
-
+export default function Home() {
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
@@ -25,11 +22,7 @@ export default async function Home() {
             </code>
             .
           </li>
-          {cartItems.length > 0 && (
-            <li className="tracking-[-.01em] text-lg">
-              You have {cartItems.length} item(s) in your cart.
-            </li>
-          )}
+
           <li className="tracking-[-.01em]">
             Save and see your changes instantly.
           </li>

@@ -3,7 +3,8 @@ import { useCartStore } from '@/stores/useCartStore';
 import { ShoppingCartIcon } from 'lucide-react';
 
 export default function CartIcon() {
-  const cartQuantity = useCartStore((state) => state.cartQuantity);
+  const cart = useCartStore((state) => state.cart);
+  const cartQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="relative">

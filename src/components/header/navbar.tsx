@@ -1,7 +1,18 @@
+'use client';
 import Link from 'next/link';
 import CartIcon from './cart-icon';
+import { useSession, signOut } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  const handleSignOut = () => {
+    signOut();
+    router.push('/');
+  };
+
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
@@ -10,7 +21,6 @@ export default function Navbar() {
           href="/"
           className="flex items-center gap-2 text-2xl font-bold text-blue-600"
         >
-          {/* You can replace this with an actual logo image if desired */}
           <svg width="32" height="32" fill="none" viewBox="0 0 32 32">
             <rect width="32" height="32" rx="8" fill="#2563EB" />
             <text
@@ -24,7 +34,7 @@ export default function Navbar() {
               N
             </text>
           </svg>
-          Next Store
+          Next Store {session?.user?.name && `- ${session.user.name}`}
         </Link>
         {/* Navigation Links */}
         <div className="hidden md:flex gap-8 text-gray-700 font-medium">
@@ -34,6 +44,14 @@ export default function Navbar() {
           <Link href="/about">About</Link>
           <Link href="/contact">Contact</Link>
         </div>
+        {session?.user && (
+          <button
+            onClick={handleSignOut}
+            className="ml-4 text-gray-700 hover:text-blue-600 focus:outline-none"
+          >
+            Sign Out
+          </button>
+        )}
         {/* Icons */}
         <div className="flex items-center gap-4">
           {/* Cart Icon */}
@@ -70,7 +88,7 @@ export default function Navbar() {
             >
               <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
-          </button>
+          </button>{' '}
         </div>
       </div>
     </nav>
