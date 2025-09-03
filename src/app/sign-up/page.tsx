@@ -1,5 +1,5 @@
 'use client';
-
+import { mergeGuestCartToUserCart } from '@/lib/actions/cart.actions';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signUp } from '@/lib/auth-client';
@@ -23,6 +23,7 @@ export default function SignUpPage() {
     if (res.error) {
       setError(res.error.message || 'Something went wrong.');
     } else {
+      await mergeGuestCartToUserCart();
       router.push('/products');
     }
   }

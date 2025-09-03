@@ -94,7 +94,8 @@ export async function updateItemQuantity(
 
   if (user) {
     const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
-    const items: CartItemType[] = cart && Array.isArray(cart.items) ? (cart.items as CartItemType[]) : [];
+    const items: CartItemType[] =
+      cart && Array.isArray(cart.items) ? (cart.items as CartItemType[]) : [];
     const idx = items.findIndex(
       (i) => i.id === id && i.color === color && i.size === size
     );
@@ -121,60 +122,60 @@ export async function updateItemQuantity(
   }
 }
 
-// export async function mergeGuestCartToUserCart() {
-//   const { user } = await getAuthenticatedUser();
-//   if (!user) return;
+export async function mergeGuestCartToUserCart() {
+  try {
+    const { user } = await getAuthenticatedUser();
+    if (!user) return;
 
-//   const cookiesStore = await cookies();
-//   const cartCookie = cookiesStore.get('cart')?.value;
-//   if (!cartCookie) return;
-//   const guestItems = JSON.parse(cartCookie);
+    const cookiesStore = await cookies();
+    const cartCookie = cookiesStore.get('cart')?.value;
+    if (!cartCookie) return;
+    const guestItems = JSON.parse(cartCookie);
 
-//   // Fetch user's cart from DB
-//   const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
-//   let userItems = cart && Array.isArray(cart.items) ? cart.items : [];
+    const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
+    const userItems: CartItemType[] =
+      cart && Array.isArray(cart.items) ? (cart.items as CartItemType[]) : [];
 
-//   // Merge logic
-//   for (const guestItem of guestItems) {
-//     // Fetch product to check stock
-//     const product = await prisma.product.findUnique({
-//       where: { id: guestItem.id },
-//     });
-//     if (!product) continue;
-//     const idx = userItems.findIndex(
-//       (i) =>
-//         i.id === guestItem.id &&
-//         i.color === guestItem.color &&
-//         i.size === guestItem.size
-//     );
-//     const maxQty = product.stock;
-//     if (idx > -1) {
-//       // Increase quantity, but do not exceed stock
-//       userItems[idx].quantity = Math.min(
-//         (userItems[idx].quantity || 0) + (guestItem.quantity || 1),
-//         maxQty
-//       );
-//     } else {
-//       userItems.push({
-//         ...guestItem,
-//         quantity: Math.min(guestItem.quantity || 1, maxQty),
-//       });
-//     }
-//   }
 
-//   // Save merged cart to DB
-//   await prisma.cart.upsert({
-//     where: cart ? { id: cart.id } : { id: '' },
-//     update: { items: convertToPlainObject(userItems) },
-//     create: {
-//       userId: user.id,
-//       items: convertToPlainObject(userItems),
-//       itemsPrice: 0,
-//       taxPrice: 0,
-//       totalPrice: 0,
-//     },
-//   });
+    for (const guestItem of guestItems) {
+      const product = await prisma.product.findUnique({
+        where: { id: guestItem.id },
+      });
+      if (!product) continue;
+      const idx = userItems.findIndex(
+        (i) =>
+          i.id === guestItem.id &&
+          i.color === guestItem.color &&
+          i.size === guestItem.size
+      );
+      const maxQty = product.stock;
+      if (idx > -1) {
+        userItems[idx].quantity = Math.min(
+          (userItems[idx].quantity || 0) + (guestItem.quantity || 1),
+          maxQty
+        );
+      } else {
+        userItems.push({
+          ...guestItem,
+          quantity: Math.min(guestItem.quantity || 1, maxQty),
+        });
+      }
+    }
+    
+    await prisma.cart.upsert({
+      where: cart ? { id: cart.id } : { id: '' },
+      update: { items: convertToPlainObject(userItems) },
+      create: {
+        userId: user.id,
+        items: convertToPlainObject(userItems),
+        itemsPrice: 0,
+        taxPrice: 0,
+        totalPrice: 0,
+      },
+    });
 
-//   // Clear guest cart cookie
-//   cookiesStore.set('cart', '', { httpOnly: true, maxAge: 0 });
-// }
+    cookiesStore.set('cart', '', { httpOnly: true, maxAge: 0 });
+  } catch (error) {
+    console.error('Error merging guest cart to user cart:', error);
+  }
+}
