@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { CartItemType } from '@/lib/types/cart.type';
+import { updateItemQuantity } from '@/lib/actions/cart.actions';
 
 export default function CartDisplay({
   cartItems,
@@ -12,14 +13,30 @@ export default function CartDisplay({
 }) {
   const [cart, setCart] = useState(cartItems);
 
-  const handleQuantityChange = (id: string | number, qty: number) => {
+  const handleQuantityChange = (
+    id: string | number,
+    color: string,
+    size: string,
+    quantity: number
+  ) => {
     setCart((prev) =>
       prev.map((item) =>
-        String(item.id) === String(id)
-          ? { ...item, quantity: Math.max(1, qty) }
+        String(item.id) === String(id) &&
+        item.color === color &&
+        item.size === size
+          ? { ...item, quantity }
           : item
       )
     );
+    const item = cart.find(
+      (item) =>
+        String(item.id) === String(id) &&
+        item.color === color &&
+        item.size === size
+    );
+    if (item) {
+      updateItemQuantity(item.id, item.color, item.size, quantity);
+    }
   };
 
   const handleRemove = (id: string | number) => {
@@ -32,7 +49,7 @@ export default function CartDisplay({
   );
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 bg-white min-h-screen">
+    <div className="max-w-7xl mx-auto px-4 py-10 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold mb-8 text-gray-900">Shopping Cart</h1>
       {cart.length === 0 ? (
         <div className="text-center text-gray-500 py-20">
@@ -72,7 +89,12 @@ export default function CartDisplay({
                       <button
                         className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
                         onClick={() =>
-                          handleQuantityChange(item.id, item.quantity - 1)
+                          handleQuantityChange(
+                            item.id,
+                            item.color,
+                            item.size,
+                            item.quantity - 1
+                          )
                         }
                         aria-label="Decrease quantity"
                       >
@@ -83,14 +105,24 @@ export default function CartDisplay({
                         min={1}
                         value={item.quantity}
                         onChange={(e) =>
-                          handleQuantityChange(item.id, Number(e.target.value))
+                          handleQuantityChange(
+                            item.id,
+                            item.color,
+                            item.size,
+                            Number(e.target.value)
+                          )
                         }
                         className="w-12 text-center border rounded"
                       />
                       <button
                         className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
                         onClick={() =>
-                          handleQuantityChange(item.id, item.quantity + 1)
+                          handleQuantityChange(
+                            item.id,
+                            item.color,
+                            item.size,
+                            item.quantity + 1
+                          )
                         }
                         aria-label="Increase quantity"
                       >

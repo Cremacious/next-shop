@@ -6,13 +6,13 @@ import { ProductType } from '@/lib/types/product.type';
 export default function ProductCard({ product }: { product: ProductType }) {
   return (
     <div className="max-w-md mx-auto rounded-md overflow-hidden shadow-md hover:shadow-lg">
-      <div className="relative">
+      <div className="relative w-full h-48">
         <Image
-          className="w-full"
+          className="object-cover"
+          sizes="100vw"
+          fill
           src={product.images[0]}
           alt="Product Image"
-          width={640}
-          height={426}
         />
         <div className="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 m-2 rounded-md text-sm font-medium">
           SALE

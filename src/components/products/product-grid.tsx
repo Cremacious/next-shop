@@ -28,9 +28,9 @@ export default function ProductGrid({ products }: { products: ProductType[] }) {
     return matchesCategory && matchesSearch && matchesPrice;
   });
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 bg-white">
+    <div className="max-w-7xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-gray-900">Shop Products</h1>
-      <div className="flex flex-col md:flex-row md:items-end gap-4 mb-8">
+      <div className="flex flex-col md:flex-row md:items-end gap-4 mb-8 border-b-4 border-gray-200 pb-8">
         <div>
           <label className="block text-sm font-medium mb-1">Category</label>
           <select

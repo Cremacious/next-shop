@@ -81,6 +81,46 @@ export async function getUserCart() {
   }
 }
 
+export async function updateItemQuantity(
+  id: string,
+  color: string,
+  size: string,
+  quantity: number
+) {
+  const { user } = await getAuthenticatedUser();
+
+  const product = await prisma.product.findUnique({ where: { id } });
+  if (!product || product.stock < quantity) throw new Error('Out of stock');
+
+  if (user) {
+    const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
+    const items: CartItemType[] = cart && Array.isArray(cart.items) ? (cart.items as CartItemType[]) : [];
+    const idx = items.findIndex(
+      (i) => i.id === id && i.color === color && i.size === size
+    );
+    if (idx > -1) {
+      items[idx].quantity = quantity;
+      if (cart) {
+        await prisma.cart.update({
+          where: { id: cart.id },
+          data: { items: convertToPlainObject(items) },
+        });
+      }
+    }
+  } else {
+    const cookiesStore = await cookies();
+    const cartCookie = cookiesStore.get('cart')?.value;
+    const items: CartItemType[] = cartCookie ? JSON.parse(cartCookie) : [];
+    const idx = items.findIndex(
+      (i) => i.id === id && i.color === color && i.size === size
+    );
+    if (idx > -1) {
+      items[idx].quantity = quantity;
+      cookiesStore.set('cart', JSON.stringify(items), { httpOnly: true });
+    }
+  }
+}
+
 // export async function mergeGuestCartToUserCart() {
 //   const { user } = await getAuthenticatedUser();
 //   if (!user) return;
