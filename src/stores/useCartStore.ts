@@ -52,7 +52,6 @@ export const useCartStore = create<CartState>()(
               : i
           ),
         });
-        // Server sync
         await updateItemQuantityServer(get().cart);
       },
       removeFromCart: async (id, color, size) => {

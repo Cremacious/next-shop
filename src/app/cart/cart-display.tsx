@@ -2,11 +2,13 @@
 import { useCartStore } from '@/stores/useCartStore';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function CartDisplay({}) {
   const cart = useCartStore((state) => state.cart);
   const updateItemQuantity = useCartStore((state) => state.updateItemQuantity);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
+  const router = useRouter();
 
   const handleQuantityChange = async (
     id: string,
@@ -16,7 +18,6 @@ export default function CartDisplay({}) {
   ) => {
     if (newQuantity < 1) {
       return;
-      // removeFromCart(id, color, size);
     } else {
       updateItemQuantity(id, color, size, newQuantity);
     }
@@ -85,21 +86,6 @@ export default function CartDisplay({}) {
                           -
                         </button>
                       )}
-                      {/* <button
-                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                        onClick={() =>
-                          handleQuantityChange(
-                            item.id,
-                            item.color,
-                            item.size,
-                            item.quantity - 1
-                          )
-                        }
-                        aria-label="Decrease quantity"
-                      >
-                        -
-                      </button> */}
-
                       <input
                         type="number"
                         min={1}
@@ -167,7 +153,10 @@ export default function CartDisplay({}) {
               <span>Subtotal</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
-            <button className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition mb-2">
+            <button
+              onClick={() => router.push('/checkout')}
+              className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition mb-2"
+            >
               Proceed to Checkout
             </button>
             <Link
