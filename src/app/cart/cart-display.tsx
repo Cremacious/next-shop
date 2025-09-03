@@ -3,13 +3,7 @@ import { useCartStore } from '@/stores/useCartStore';
 import Link from 'next/link';
 import Image from 'next/image';
 
-import { CartItemType } from '@/lib/types/cart.type';
-
-export default function CartDisplay({
-  cartItems,
-}: {
-  cartItems: CartItemType[];
-}) {
+export default function CartDisplay({}) {
   const cart = useCartStore((state) => state.cart);
   const updateItemQuantity = useCartStore((state) => state.updateItemQuantity);
 

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import CartIcon from './cart-icon';
 import { useSession, signOut } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
+import { useCartStore } from '@/stores/useCartStore';
 
 export default function Navbar() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function Navbar() {
 
   const handleSignOut = () => {
     signOut();
+    useCartStore.getState().clearCart();
     router.push('/');
   };
 

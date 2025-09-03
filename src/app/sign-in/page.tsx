@@ -1,8 +1,12 @@
 'use client';
-import { mergeGuestCartToUserCart } from '@/lib/actions/cart.actions';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from '@/lib/auth-client';
+import {
+  getUserCart,
+  mergeGuestCartToUserCart,
+} from '@/lib/actions/cart.actions';
+import { useCartStore } from '@/stores/useCartStore';
 
 export default function SignInPage() {
   const router = useRouter();
@@ -23,6 +27,8 @@ export default function SignInPage() {
       setError(res.error.message || 'Something went wrong.');
     } else {
       await mergeGuestCartToUserCart();
+      const serverCart = await getUserCart();
+      useCartStore.setState({ cart: serverCart });
       router.push('/products');
     }
   }
