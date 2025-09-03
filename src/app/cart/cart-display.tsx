@@ -15,7 +15,8 @@ export default function CartDisplay({}) {
     newQuantity: number
   ) => {
     if (newQuantity < 1) {
-      removeFromCart(id, color, size);
+      return;
+      // removeFromCart(id, color, size);
     } else {
       updateItemQuantity(id, color, size, newQuantity);
     }
@@ -68,7 +69,23 @@ export default function CartDisplay({}) {
                       ${item.price.toFixed(2)}
                     </span>
                     <div className="flex items-center gap-2">
-                      <button
+                      {item.quantity > 1 && (
+                        <button
+                          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                          onClick={() =>
+                            handleQuantityChange(
+                              item.id,
+                              item.color,
+                              item.size,
+                              item.quantity - 1
+                            )
+                          }
+                          aria-label="Decrease quantity"
+                        >
+                          -
+                        </button>
+                      )}
+                      {/* <button
                         className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
                         onClick={() =>
                           handleQuantityChange(
@@ -81,7 +98,8 @@ export default function CartDisplay({}) {
                         aria-label="Decrease quantity"
                       >
                         -
-                      </button>
+                      </button> */}
+
                       <input
                         type="number"
                         min={1}

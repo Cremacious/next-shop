@@ -63,18 +63,18 @@ export default function ProductDetails({ product }: { product: ProductType }) {
             <span className="font-bold text-gray-700 dark:text-gray-300">
               Select Color:
             </span>
-            <div className="flex items-center mt-2">
+            <div className="flex flex-row gap-2 items-center mt-2">
               {product.colors.map((color) => (
                 <Button
                   key={color}
                   onClick={() => setSelectedColor(color)}
                   className={
                     selectedColor === color
-                      ? 'bg-red-800'
-                      : 'bg-white text-slate-800'
+                      ? 'bg-slate-600 border text-white hover:bg-slate-700'
+                      : 'bg-white border text-slate-800 hover:bg-slate-200'
                   }
                 >
-                  {color}
+                  {color.charAt(0).toUpperCase() + color.slice(1)}
                 </Button>
               ))}
             </div>
@@ -83,13 +83,15 @@ export default function ProductDetails({ product }: { product: ProductType }) {
             <span className="font-bold text-gray-700 dark:text-gray-300">
               Select Size:
             </span>
-            <div className="flex items-center mt-2">
+            <div className="flex flex-row gap-2 items-center mt-2">
               {product.sizes.map((size) => (
                 <Button
                   key={size}
                   onClick={() => setSelectedSize(size)}
                   className={
-                    selectedSize === size ? 'bg-red-400' : 'bg-gray-400'
+                    selectedSize === size
+                      ? 'bg-slate-600 border text-white hover:bg-slate-700'
+                      : 'bg-white border text-slate-800 hover:bg-slate-200'
                   }
                 >
                   {size}
