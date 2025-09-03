@@ -2,30 +2,30 @@
 import { Button } from '../ui/button';
 import { ProductType } from '@/lib/types/product.type';
 import { useState } from 'react';
-import { CartType } from '@/lib/types/cart.type';
+import { Input } from '../ui/input';
 import { useCartStore } from '@/stores/useCartStore';
 
 export default function AddToCartButton({
   product,
   size,
   color,
-  cartItems,
 }: {
   product: ProductType;
   size: string;
   color: string;
-  cartItems: CartType[];
 }) {
   const addToCart = useCartStore((state) => state.addToCart);
   const updateItemQuantity = useCartStore((state) => state.updateItemQuantity);
   const cart = useCartStore((state) => state.cart);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
 
   const [isAdding, setIsAdding] = useState(false);
 
-  const isInCart = cartItems.some(
+  const cartItem = cart.find(
     (item) =>
       item.id === product.id && item.color === color && item.size === size
   );
+  const quantity = cartItem?.quantity ?? 0;
 
   const handleAddToCart = async () => {
     try {
@@ -48,12 +48,16 @@ export default function AddToCartButton({
     id: string,
     color: string,
     size: string,
-    quantity: number
+    newQuantity: number
   ) => {
-    updateItemQuantity(id, color, size, quantity);
+    if (newQuantity < 1) {
+      removeFromCart(id, color, size);
+    } else {
+      updateItemQuantity(id, color, size, newQuantity);
+    }
   };
 
-  if (!isInCart) {
+  if (!cartItem) {
     return (
       <Button
         onClick={handleAddToCart}
@@ -66,63 +70,48 @@ export default function AddToCartButton({
   }
 
   return (
-    <>
-      {(() => {
-        const cartItem = cart.find(
-          (item) =>
-            item.id === product.id && item.color === color && item.size === size
-        );
-        return (
-          <>
-            <button
-              className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-              onClick={() =>
-                cartItem &&
-                handleQuantityChange(
-                  cartItem.id,
-                  cartItem.color!,
-                  cartItem.size!,
-                  (cartItem.quantity ?? 1) - 1
-                )
-              }
-              aria-label="Decrease quantity"
-            >
-              -
-            </button>
-            <input
-              type="number"
-              min={1}
-              value={cartItem?.quantity ?? 1}
-              onChange={(e) => {
-                if (cartItem) {
-                  handleQuantityChange(
-                    cartItem.id,
-                    cartItem.color!,
-                    cartItem.size!,
-                    Number(e.target.value)
-                  );
-                }
-              }}
-              className="w-12 text-center border rounded"
-            />
-            <button
-              className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-              onClick={() =>
-                cartItem &&
-                handleQuantityChange(
-                  cartItem.id,
-                  cartItem.color!,
-                  cartItem.size!,
-                  (cartItem.quantity ?? 1) + 1
-                )
-              }
-              aria-label="Increase quantity"
-            >
-              +
-            </button>
-          </>
-        );
-      })()}
-    </>
+    <div className="flex items-center gap-2">
+      <Button
+        className=""
+        onClick={() =>
+          handleQuantityChange(
+            cartItem.id,
+            cartItem.color!,
+            cartItem.size!,
+            quantity - 1
+          )
+        }
+      >
+        -
+      </Button>
+      <Input
+        type="number"
+        min={1}
+        value={quantity}
+        onChange={(e) => {
+          const val = Math.max(1, Number(e.target.value));
+          handleQuantityChange(
+            cartItem.id,
+            cartItem.color!,
+            cartItem.size!,
+            val
+          );
+        }}
+        className="text-center"
+      />
+      <Button
+        className=""
+        onClick={() =>
+          handleQuantityChange(
+            cartItem.id,
+            cartItem.color!,
+            cartItem.size!,
+            quantity + 1
+          )
+        }
+      >
+        +
+      </Button>
+    </div>
   );
 }

@@ -4,14 +4,13 @@ import { ProductType } from '@/lib/types/product.type';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import AddToCartButton from '@/components/cart/add-to-cart-button';
-import { CartType } from '@/lib/types/cart.type';
+
 
 export default function ProductDetails({
   product,
-  cartItems,
 }: {
   product: ProductType;
-  cartItems: CartType[];
+
 }) {
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
   const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
@@ -35,7 +34,6 @@ export default function ProductDetails({
                 product={product}
                 size={selectedSize}
                 color={selectedColor}
-                cartItems={cartItems}
               />
             </div>
             <div className="w-1/2 px-2">
