@@ -6,7 +6,7 @@ import { getAuthenticatedUser } from '../server-utils';
 import { CartItemType } from '../types/cart.type';
 import { convertToPlainObject } from '../utils';
 
-export async function addItemToCart(item: CartItemType) {
+export async function addItemToCartServer(item: CartItemType) {
   try {
     const { user } = await getAuthenticatedUser();
 
@@ -77,7 +77,7 @@ export async function getUserCart() {
   }
 }
 
-export async function updateItemQuantity(
+export async function updateItemQuantityServer(
   id: string,
   color: string,
   size: string,

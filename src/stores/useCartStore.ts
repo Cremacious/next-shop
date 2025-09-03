@@ -1,42 +1,66 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { CartItemType } from '@/lib/types/cart.type';
+import { addItemToCartServer, updateItemQuantityServer } from '@/lib/actions/cart.actions';
 
 interface CartState {
-  cartQuantity: number;
-  setCartQuantity: (quantity: number) => void;
+  cart: CartItemType[];
+  addToCart: (item: CartItemType) => void;
+  updateItemQuantity: (
+    id: string,
+    color: string,
+    size: string,
+    quantity: number
+  ) => void;
+  removeFromCart: (id: string, color: string, size: string) => void;
+  clearCart: () => void;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
-    (set) => ({
-      cartQuantity: 0,
-      setCartQuantity: (quantity) => set({ cartQuantity: quantity }),
+    (set, get) => ({
+      cart: [],
+      addToCart: async (item) => {
+        const exists = get().cart.find(
+          (i) =>
+            i.id === item.id && i.color === item.color && i.size === item.size
+        );
+        if (exists) {
+          set({
+            cart: get().cart.map((i) =>
+              i.id === item.id && i.color === item.color && i.size === item.size
+                ? { ...i, quantity: i.quantity + (item.quantity || 1) }
+                : i
+            ),
+          });
+        } else {
+          set({
+            cart: [...get().cart, { ...item, quantity: item.quantity || 1 }],
+          });
+        }
+        await addItemToCartServer(item);
+      },
+      updateItemQuantity: async (id, color, size, quantity) => {
+   
+        set({
+          cart: get().cart.map((i) =>
+            i.id === id && i.color === color && i.size === size
+              ? { ...i, quantity }
+              : i
+          ),
+        });
+        // Server sync
+        await updateItemQuantityServer(id, color, size, quantity);
+      },
+      removeFromCart: (id, color, size) => {
+        set({
+          cart: get().cart.filter(
+            (i) => !(i.id === id && i.color === color && i.size === size)
+          ),
+        });
+      },
+      clearCart: () => set({ cart: [] }),
     }),
-
     { name: 'cart-storage' }
   )
 );
-// const myCart = useCartStore((state) => state.cart);
-//   const removeFromCart = useCartStore((state) => state.removeFromCart);
-//   const updateQuantity = useCartStore((state) => state.updateQuantity);
-//   const getTotal = useCartStore((state) => state.getTotal);
-
-//          <div>
-//               {myCart.map((item) => (
-//                 <div key={item.id}>
-//                   <span>{item.name}</span>
-//                   <input
-//                     type="number"
-//                     value={item.quantity}
-//                     min={1}
-//                     onChange={(e) =>
-//                       updateQuantity(item.id, Number(e.target.value))
-//                     }
-//                   />
-//                   <button onClick={() => removeFromCart(item.id)}>
-//                     Remove
-//                   </button>
-//                 </div>
-//               ))}
-//               <div>Total: ${getTotal().toFixed(2)}</div>
-//             </div>

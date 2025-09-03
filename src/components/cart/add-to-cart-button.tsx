@@ -1,6 +1,5 @@
 'use client';
 import { Button } from '../ui/button';
-import { addItemToCart, updateItemQuantity } from '@/lib/actions/cart.actions';
 import { ProductType } from '@/lib/types/product.type';
 import { useState } from 'react';
 import { CartType } from '@/lib/types/cart.type';
@@ -17,8 +16,11 @@ export default function AddToCartButton({
   color: string;
   cartItems: CartType[];
 }) {
+  const addToCart = useCartStore((state) => state.addToCart);
+  const updateItemQuantity = useCartStore((state) => state.updateItemQuantity);
+  const cart = useCartStore((state) => state.cart);
+
   const [isAdding, setIsAdding] = useState(false);
-  const [cart, setCart] = useState(cartItems);
 
   const isInCart = cartItems.some(
     (item) =>
@@ -28,60 +30,27 @@ export default function AddToCartButton({
   const handleAddToCart = async () => {
     try {
       setIsAdding(true);
-      await addItemToCart({
+      addToCart({
         id: product.id,
         name: product.name,
         price: product.price,
-        color,
-        size,
+        color: color,
+        size: size,
         quantity: 1,
       });
       setIsAdding(false);
-      updateItemQuantity(product.id, color, size, 1);
-      const totalQuantity = cart.reduce(
-        (sum, item) => sum + (item.quantity ?? 0),
-        0
-      );
-      useCartStore.getState().setCartQuantity(totalQuantity);
     } catch (error) {
       console.error('Error adding item to cart:', error);
     }
   };
 
-  const handleQuantityChange = (
-    id: string | number,
+  const handleQuantityChange = async (
+    id: string,
     color: string,
     size: string,
     quantity: number
   ) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        String(item.id) === String(id) &&
-        item.color === color &&
-        item.size === size
-          ? { ...item, quantity }
-          : item
-      )
-    );
-    const item = cart.find(
-      (item) =>
-        String(item.id) === String(id) &&
-        item.color === color &&
-        item.size === size
-    );
-    if (
-      item &&
-      typeof item.id === 'string' &&
-      typeof item.color === 'string' &&
-      typeof item.size === 'string'
-    ) {
-      updateItemQuantity(item.id, item.color, item.size, quantity);
-      const totalQuantity = cart.reduce(
-        (sum, item) => sum + (item.quantity ?? 0),
-        0
-      );
-      useCartStore.getState().setCartQuantity(totalQuantity);
-    }
+    updateItemQuantity(id, color, size, quantity);
   };
 
   if (!isInCart) {

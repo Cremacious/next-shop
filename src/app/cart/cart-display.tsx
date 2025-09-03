@@ -2,48 +2,29 @@
 import { useCartStore } from '@/stores/useCartStore';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+
 import { CartItemType } from '@/lib/types/cart.type';
-import { updateItemQuantity } from '@/lib/actions/cart.actions';
 
 export default function CartDisplay({
   cartItems,
 }: {
   cartItems: CartItemType[];
 }) {
-  const [cart, setCart] = useState(cartItems);
+  const cart = useCartStore((state) => state.cart);
+  const updateItemQuantity = useCartStore((state) => state.updateItemQuantity);
 
-  const handleQuantityChange = (
-    id: string | number,
+  const handleQuantityChange = async (
+    id: string,
     color: string,
     size: string,
     quantity: number
   ) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        String(item.id) === String(id) &&
-        item.color === color &&
-        item.size === size
-          ? { ...item, quantity }
-          : item
-      )
-    );
-    const item = cart.find(
-      (item) =>
-        String(item.id) === String(id) &&
-        item.color === color &&
-        item.size === size
-    );
-    if (item) {
-      updateItemQuantity(item.id, item.color, item.size, quantity);
-      const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-      useCartStore.getState().setCartQuantity(totalQuantity);
-    }
+    updateItemQuantity(id, color, size, quantity);
   };
 
-  const handleRemove = (id: string | number) => {
-    setCart((prev) => prev.filter((item) => String(item.id) !== String(id)));
-  };
+  // const handleRemove = (id: string | number) => {
+  //   setCart((prev) => prev.filter((item) => String(item.id) !== String(id)));
+  // };
 
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -136,7 +117,7 @@ export default function CartDisplay({
                 <div className="flex flex-col items-end gap-2">
                   <button
                     className="text-red-500 hover:underline text-sm"
-                    onClick={() => handleRemove(item.id)}
+                    // onClick={() => handleRemove(item.id)}
                   >
                     Remove
                   </button>
