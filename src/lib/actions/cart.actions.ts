@@ -8,26 +8,22 @@ import { convertToPlainObject } from '../utils';
 
 export async function addItemToCart(item: CartItemType) {
   try {
-    console.log('Adding item to cart:', item);
     const { user } = await getAuthenticatedUser();
 
-    // Fetch product and check stock
     const product = await prisma.product.findUnique({ where: { id: item.id } });
     if (!product || product.stock < (item.quantity || 1))
       throw new Error('Out of stock');
 
     if (user) {
-      // Authenticated: update DB cart
       const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
       const items: CartItemType[] =
         cart && Array.isArray(cart.items) ? (cart.items as CartItemType[]) : [];
-      // Find item in cart
+
       const idx = items.findIndex(
         (i) =>
           i.id === item.id && i.color === item.color && i.size === item.size
       );
       if (idx > -1) {
-        // Increase quantity, check stock
         items[idx].quantity = Math.min(
           items[idx].quantity + (item.quantity || 1),
           product.stock
@@ -37,7 +33,7 @@ export async function addItemToCart(item: CartItemType) {
       }
 
       await prisma.cart.upsert({
-        where: cart ? { id: cart.id } : { id: '' }, // Use cart.id if cart exists, else provide an empty string (will trigger create)
+        where: cart ? { id: cart.id } : { id: '' },
         update: { items: convertToPlainObject(items) },
         create: {
           userId: user.id,
@@ -136,7 +132,6 @@ export async function mergeGuestCartToUserCart() {
     const userItems: CartItemType[] =
       cart && Array.isArray(cart.items) ? (cart.items as CartItemType[]) : [];
 
-
     for (const guestItem of guestItems) {
       const product = await prisma.product.findUnique({
         where: { id: guestItem.id },
@@ -161,7 +156,7 @@ export async function mergeGuestCartToUserCart() {
         });
       }
     }
-    
+
     await prisma.cart.upsert({
       where: cart ? { id: cart.id } : { id: '' },
       update: { items: convertToPlainObject(userItems) },

@@ -1,5 +1,6 @@
 import { getProductBySlug } from '@/lib/actions/product.actions';
 import ProductDetails from './product-details';
+import { getUserCart } from '@/lib/actions/cart.actions';
 
 export default async function ProductDetailsPage({
   params,
@@ -9,5 +10,7 @@ export default async function ProductDetailsPage({
   const { productSlug } = await params;
   const product = await getProductBySlug(productSlug);
 
-  return <ProductDetails product={product} />;
+  const cartItems = await getUserCart();
+
+  return <ProductDetails product={product} cartItems={cartItems} />;
 }

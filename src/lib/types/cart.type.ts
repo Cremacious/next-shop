@@ -6,6 +6,9 @@ export type CartType = {
   taxPrice: number;
   totalPrice: number;
   createdAt: Date;
+  color?: string;
+  size?: string;
+  quantity?: number;
 };
 
 export type CartItemType = {

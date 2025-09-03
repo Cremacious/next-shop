@@ -8,7 +8,9 @@ export type ProductType = {
   description: string;
   stock: number;
   colors: string[];
+  color?: string;
   sizes: string[];
+  size?: string;
   price: number;
   rating: number;
   numReviews: number;
