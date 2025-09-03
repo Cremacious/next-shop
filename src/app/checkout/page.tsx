@@ -1,6 +1,5 @@
 import { getUserCart } from '@/lib/actions/cart.actions';
-import CheckoutItem from './checkout-item';
-import { CartItemType } from '@/lib/types/cart.type';
+import CheckoutItems from './checkout-items';
 
 export default async function CheckoutPage() {
   const cart = await getUserCart();
@@ -14,14 +13,7 @@ export default async function CheckoutPage() {
         <div className="space-y-12 ">
           <div className="relative">
             <div className="md:overflow-auto">
-              <div className="space-y-4">
-                {/* Checkout Item */}
-                {cart.map((item: CartItemType) => (
-                  <CheckoutItem key={item.id} item={item} />
-                ))}
-                <hr className="border-gray-300" />
-              </div>
-
+              <CheckoutItems />
               <hr className="border-gray-300 my-6" />
               <div className="bg-gray-100 p-6 rounded-md">
                 <ul className="text-slate-500 font-medium space-y-4">

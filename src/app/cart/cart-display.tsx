@@ -3,6 +3,7 @@ import { useCartStore } from '@/stores/useCartStore';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import CartItemCard from '@/components/cart/cart-item-card';
 
 export default function CartDisplay({}) {
   const cart = useCartStore((state) => state.cart);
@@ -49,86 +50,12 @@ export default function CartDisplay({}) {
         <div className="flex flex-col md:flex-row gap-8">
           <div className="flex-1 bg-white rounded-lg shadow-md p-6 divide-y divide-gray-200">
             {cart.map((item) => (
-              <div key={item.id} className="flex items-center py-6 gap-6">
-                <Image
-                  src={item.image ?? '/placeholder.png'}
-                  alt={item.name}
-                  width={100}
-                  height={100}
-                  className="rounded-md object-cover border"
-                />
-                <div className="flex-1 w-full">
-                  <h2 className="text-lg font-semibold text-gray-800">
-                    {item.name}
-                  </h2>
-                  <div className="flex flex-row gap-2">
-                    <p className="text-gray-500 text-sm">Color: {item.color}</p>
-                    <p className="text-gray-500 text-sm">Size: {item.size}</p>
-                  </div>
-                  <div className="flex items-center gap-4 mt-2">
-                    <span className="text-gray-600 font-medium">
-                      ${item.price.toFixed(2)}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      {item.quantity > 1 && (
-                        <button
-                          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                          onClick={() =>
-                            handleQuantityChange(
-                              item.id,
-                              item.color,
-                              item.size,
-                              item.quantity - 1
-                            )
-                          }
-                          aria-label="Decrease quantity"
-                        >
-                          -
-                        </button>
-                      )}
-                      <input
-                        type="number"
-                        min={1}
-                        value={item.quantity}
-                        onChange={(e) =>
-                          handleQuantityChange(
-                            item.id,
-                            item.color,
-                            item.size,
-                            Number(e.target.value)
-                          )
-                        }
-                        className="w-12 text-center border rounded"
-                      />
-                      <button
-                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                        onClick={() =>
-                          handleQuantityChange(
-                            item.id,
-                            item.color,
-                            item.size,
-                            item.quantity + 1
-                          )
-                        }
-                        aria-label="Increase quantity"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                  <button
-                    className="text-red-500 hover:underline text-sm"
-                    onClick={() => handleRemove(item.id, item.color, item.size)}
-                  >
-                    Remove
-                  </button>
-                  <span className="text-gray-700 font-semibold">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </span>
-                </div>
-              </div>
+              <CartItemCard
+                key={item.id}
+                item={item}
+                handleQuantityChange={handleQuantityChange}
+                handleRemove={handleRemove}
+              />
             ))}
           </div>
           {/* Cart Summary */}
