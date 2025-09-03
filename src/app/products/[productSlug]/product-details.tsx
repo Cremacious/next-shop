@@ -18,6 +18,7 @@ export default function ProductDetails({ product }: { product: ProductType }) {
       size: selectedSize,
       quantity: 1,
     });
+
   };
 
   return (

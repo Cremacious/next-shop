@@ -1,5 +1,5 @@
 'use client';
-
+import { useCartStore } from '@/stores/useCartStore';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -36,6 +36,8 @@ export default function CartDisplay({
     );
     if (item) {
       updateItemQuantity(item.id, item.color, item.size, quantity);
+      const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+      useCartStore.getState().setCartQuantity(totalQuantity);
     }
   };
 
