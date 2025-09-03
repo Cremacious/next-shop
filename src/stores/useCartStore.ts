@@ -1,7 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CartItemType } from '@/lib/types/cart.type';
-import { addItemToCartServer, updateItemQuantityServer } from '@/lib/actions/cart.actions';
+import {
+  addItemToCartServer,
+  updateItemQuantityServer,
+} from '@/lib/actions/cart.actions';
 
 interface CartState {
   cart: CartItemType[];
@@ -38,10 +41,9 @@ export const useCartStore = create<CartState>()(
             cart: [...get().cart, { ...item, quantity: item.quantity || 1 }],
           });
         }
-        await addItemToCartServer(item);
+        await addItemToCartServer(get().cart);
       },
       updateItemQuantity: async (id, color, size, quantity) => {
-   
         set({
           cart: get().cart.map((i) =>
             i.id === id && i.color === color && i.size === size
@@ -50,7 +52,7 @@ export const useCartStore = create<CartState>()(
           ),
         });
         // Server sync
-        await updateItemQuantityServer(id, color, size, quantity);
+        await updateItemQuantityServer(get().cart);
       },
       removeFromCart: (id, color, size) => {
         set({
