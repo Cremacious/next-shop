@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { CartItemType } from '@/lib/types/cart.type';
 import {
   addItemToCartServer,
+  removeItemFromCartServer,
   updateItemQuantityServer,
 } from '@/lib/actions/cart.actions';
 
@@ -54,12 +55,13 @@ export const useCartStore = create<CartState>()(
         // Server sync
         await updateItemQuantityServer(get().cart);
       },
-      removeFromCart: (id, color, size) => {
+      removeFromCart: async (id, color, size) => {
         set({
           cart: get().cart.filter(
             (i) => !(i.id === id && i.color === color && i.size === size)
           ),
         });
+        await removeItemFromCartServer(get().cart);
       },
       clearCart: () => set({ cart: [] }),
     }),

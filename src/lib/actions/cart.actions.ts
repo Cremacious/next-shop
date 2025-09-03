@@ -143,12 +143,28 @@ export async function mergeGuestCartToUserCart() {
   }
 }
 
-// export async function removeItemFromCartServer(item: CartItemType) {
-//   try {
-//     const { user } = await getAuthenticatedUser();
-//     if (!user) return;
+export async function removeItemFromCartServer(cartItems: CartItemType[]) {
+  try {
+    const { user } = await getAuthenticatedUser();
 
-//     const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
-//     if (!cart) return;
-//   } catch (error) {}
-// }
+    if (user) {
+      const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
+      await prisma.cart.upsert({
+        where: cart ? { id: cart.id } : { id: '' },
+        update: { items: convertToPlainObject(cartItems) },
+        create: {
+          userId: user.id,
+          items: convertToPlainObject(cartItems),
+          itemsPrice: 0,
+          taxPrice: 0,
+          totalPrice: 0,
+        },
+      });
+    } else {
+      const cookiesStore = await cookies();
+      cookiesStore.set('cart', JSON.stringify(cartItems), { httpOnly: true });
+    }
+  } catch (error) {
+    console.error('Error removing item from cart:', error);
+  }
+}

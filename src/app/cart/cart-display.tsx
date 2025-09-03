@@ -6,6 +6,7 @@ import Image from 'next/image';
 export default function CartDisplay({}) {
   const cart = useCartStore((state) => state.cart);
   const updateItemQuantity = useCartStore((state) => state.updateItemQuantity);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
 
   const handleQuantityChange = async (
     id: string,
@@ -16,9 +17,9 @@ export default function CartDisplay({}) {
     updateItemQuantity(id, color, size, quantity);
   };
 
-  // const handleRemove = (id: string | number) => {
-  //   setCart((prev) => prev.filter((item) => String(item.id) !== String(id)));
-  // };
+  const handleRemove = (id: string, color: string, size: string) => {
+    removeFromCart(id, color, size);
+  };
 
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -111,7 +112,7 @@ export default function CartDisplay({}) {
                 <div className="flex flex-col items-end gap-2">
                   <button
                     className="text-red-500 hover:underline text-sm"
-                    // onClick={() => handleRemove(item.id)}
+                    onClick={() => handleRemove(item.id, item.color, item.size)}
                   >
                     Remove
                   </button>
