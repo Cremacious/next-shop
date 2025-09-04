@@ -4,10 +4,15 @@ import CheckoutItems from './checkout-items';
 export default async function CheckoutPage() {
   const cart = await getUserCart();
 
+  // const subtotal = cart.reduce(
+  //   (sum: number, item: { price: number; quantity: number }) => sum + item.price * item.quantity,
+  //   0
+  // );
+
   return (
     <div className="max-w-7xl mx-auto bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto bg-gray-50 p-6">
-        <div className="border-b border-gray-300 pb-4 mb-12">
+        <div className="border-b border-gray-300 pb-4 mb-6">
           <h1 className="text-2xl text-slate-900 font-semibold">Checkout</h1>
         </div>
         <div className="space-y-12 ">
@@ -20,7 +25,7 @@ export default async function CheckoutPage() {
                   <li className="flex flex-wrap gap-4 text-sm">
                     Subtotal
                     <span className="ml-auto font-semibold text-slate-900">
-                      $102.00
+                      ${cart.itemsPrice}
                     </span>
                   </li>
                   <li className="flex flex-wrap gap-4 text-sm">

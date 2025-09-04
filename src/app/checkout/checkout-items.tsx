@@ -35,9 +35,10 @@ export default function CheckoutItems() {
           item={item}
           handleQuantityChange={handleQuantityChange}
           handleRemove={handleRemove}
+          checkout={true}
         />
       ))}
-      <hr className="border-gray-300" />
+     
     </div>
   );
 }

@@ -6,12 +6,6 @@ import { getAuthenticatedUser } from '../server-utils';
 import { CartItemType } from '../types/cart.type';
 import { convertToPlainObject } from '../utils';
 
-// const calcItemsPrice = (items: CartItemType[]) => {
-//   return items.reduce((total, item) => {
-//     const itemTotal = item.price * item.quantity;
-//     return total + itemTotal;
-//   }, 0);
-// };
 
 export async function addItemToCartServer(cartItems: CartItemType[]) {
   try {
