@@ -1,13 +1,17 @@
 import { getUserCart } from '@/lib/actions/cart.actions';
 import CheckoutItems from './checkout-items';
+import { getAuthenticatedUser } from '@/lib/server-utils';
+import { redirect } from 'next/navigation';
 
 export default async function CheckoutPage() {
   const cart = await getUserCart();
+  const { user } = await getAuthenticatedUser();
 
-  // const subtotal = cart.reduce(
-  //   (sum: number, item: { price: number; quantity: number }) => sum + item.price * item.quantity,
-  //   0
-  // );
+  if (!user) {
+    if (typeof window === 'undefined') {
+      return redirect('/sign-in');
+    }
+  }
 
   return (
     <div className="max-w-7xl mx-auto bg-gray-50 p-6">
@@ -25,7 +29,7 @@ export default async function CheckoutPage() {
                   <li className="flex flex-wrap gap-4 text-sm">
                     Subtotal
                     <span className="ml-auto font-semibold text-slate-900">
-                      ${cart.itemsPrice}
+                      ${cart?.itemsPrice}
                     </span>
                   </li>
                   <li className="flex flex-wrap gap-4 text-sm">

@@ -28,7 +28,7 @@ export default function SignInPage() {
     } else {
       await mergeGuestCartToUserCart();
       const serverCart = await getUserCart();
-      useCartStore.setState({ cart: serverCart });
+      useCartStore.setState({ cart: serverCart?.items || [] });
       router.push('/products');
     }
   }

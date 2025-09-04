@@ -6,7 +6,6 @@ import { getAuthenticatedUser } from '../server-utils';
 import { CartItemType } from '../types/cart.type';
 import { convertToPlainObject } from '../utils';
 
-
 export async function addItemToCartServer(cartItems: CartItemType[]) {
   try {
     const { user } = await getAuthenticatedUser();
@@ -20,6 +19,11 @@ export async function addItemToCartServer(cartItems: CartItemType[]) {
       }
     }
 
+    const itemsPrice = cartItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
     if (user) {
       const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
       await prisma.cart.upsert({
@@ -29,6 +33,20 @@ export async function addItemToCartServer(cartItems: CartItemType[]) {
           userId: user.id,
           items: convertToPlainObject(cartItems),
           itemsPrice: 0,
+          taxPrice: 0,
+          totalPrice: 0,
+        },
+      });
+      await prisma.cart.upsert({
+        where: cart ? { id: cart.id } : { id: '' },
+        update: {
+          items: convertToPlainObject(cartItems),
+          itemsPrice,
+        },
+        create: {
+          userId: user.id,
+          items: convertToPlainObject(cartItems),
+          itemsPrice,
           taxPrice: 0,
           totalPrice: 0,
         },
@@ -46,10 +64,16 @@ export async function getUserCart() {
   const { user } = await getAuthenticatedUser();
   if (user) {
     const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
-    return cart?.items || [];
+    return cart;
   } else {
     const cartCookie = (await cookies()).get('cart')?.value;
-    return cartCookie ? JSON.parse(cartCookie) : [];
+    const items = cartCookie ? JSON.parse(cartCookie) : [];
+    const itemsPrice = items.reduce(
+      (sum: number, item: { price: number; quantity: number }) =>
+        sum + item.price * item.quantity,
+      0
+    );
+    return { items, itemsPrice, taxPrice: 0, totalPrice: 0 };
   }
 }
 
@@ -65,6 +89,11 @@ export async function updateItemQuantityServer(cartItems: CartItemType[]) {
       }
     }
 
+    const itemsPrice = cartItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
     if (user) {
       const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
       await prisma.cart.upsert({
@@ -74,6 +103,21 @@ export async function updateItemQuantityServer(cartItems: CartItemType[]) {
           userId: user.id,
           items: convertToPlainObject(cartItems),
           itemsPrice: 0,
+          taxPrice: 0,
+          totalPrice: 0,
+        },
+      });
+
+      await prisma.cart.upsert({
+        where: cart ? { id: cart.id } : { id: '' },
+        update: {
+          items: convertToPlainObject(cartItems),
+          itemsPrice,
+        },
+        create: {
+          userId: user.id,
+          items: convertToPlainObject(cartItems),
+          itemsPrice,
           taxPrice: 0,
           totalPrice: 0,
         },
@@ -148,6 +192,11 @@ export async function removeItemFromCartServer(cartItems: CartItemType[]) {
   try {
     const { user } = await getAuthenticatedUser();
 
+    const itemsPrice = cartItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
     if (user) {
       const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
       await prisma.cart.upsert({
@@ -157,6 +206,20 @@ export async function removeItemFromCartServer(cartItems: CartItemType[]) {
           userId: user.id,
           items: convertToPlainObject(cartItems),
           itemsPrice: 0,
+          taxPrice: 0,
+          totalPrice: 0,
+        },
+      });
+      await prisma.cart.upsert({
+        where: cart ? { id: cart.id } : { id: '' },
+        update: {
+          items: convertToPlainObject(cartItems),
+          itemsPrice,
+        },
+        create: {
+          userId: user.id,
+          items: convertToPlainObject(cartItems),
+          itemsPrice,
           taxPrice: 0,
           totalPrice: 0,
         },

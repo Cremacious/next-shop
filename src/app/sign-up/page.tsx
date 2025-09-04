@@ -30,8 +30,7 @@ export default function SignUpPage() {
     } else {
       await mergeGuestCartToUserCart();
       const serverCart = await getUserCart();
-      useCartStore.setState({ cart: serverCart });
-      router.push('/products');
+      useCartStore.setState({ cart: serverCart?.items || [] });
       router.push('/products');
     }
   }
