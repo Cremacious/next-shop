@@ -13,6 +13,7 @@ model User {
   email         String
   emailVerified Boolean
   image         String?
+  shippingAddress Json?   @db.Json 
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]

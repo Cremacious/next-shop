@@ -4,6 +4,7 @@ import { getAuthenticatedUser } from '@/lib/server-utils';
 import { redirect } from 'next/navigation';
 import PriceSummary from './price-summary';
 import AddressForm from './address-form';
+import { shippingAddressType } from '@/lib/types/user.type';
 
 export default async function CheckoutPage() {
   const cart = await getUserCart();
@@ -30,7 +31,7 @@ export default async function CheckoutPage() {
             </div>
           </div>
           <div className="w-full h-max rounded-md">
-            <AddressForm />
+            <AddressForm address={user?.shippingAddress as shippingAddressType ?? { street: '', city: '', state: '', zip: '' }} />
             <form>
               <div className="mt-10">
                 <h2 className="text-xl text-slate-900 font-semibold mb-6">

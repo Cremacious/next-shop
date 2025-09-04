@@ -14,6 +14,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { saveShippingAddress } from '@/lib/actions/user.actions';
+import { shippingAddressType } from '@/lib/types/user.type';
 
 const formSchema = z.object({
   firstName: z.string().min(1),
@@ -26,19 +28,28 @@ const formSchema = z.object({
   zipCode: z.string().min(1),
 });
 
-export default function AddressForm() {
+export default function AddressForm({
+  address,
+}: {
+  address: shippingAddressType;
+}) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: address.firstName || '',
+      lastName: address.lastName || '',
+      email: address.email || '',
+      phone: address.phone || '',
+      address: address.address || '',
+      city: address.city || '',
+      state: address.state || '',
+      zipCode: address.zipCode || '',
+    },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
+      await saveShippingAddress({ address: values });
     } catch (error) {
       console.error('Form submission error', error);
       toast.error('Failed to submit the form. Please try again.');
