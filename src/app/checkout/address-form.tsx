@@ -1,10 +1,12 @@
 'use client';
 
-import { toast } from 'sonner';
+import { saveShippingAddress } from '@/lib/actions/user.actions';
+import { UserType } from '@/lib/types/user.type';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import {
   Form,
   FormControl,
@@ -14,8 +16,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { saveShippingAddress } from '@/lib/actions/user.actions';
-import { shippingAddressType } from '@/lib/types/user.type';
 
 const formSchema = z.object({
   firstName: z.string().min(1),
@@ -28,38 +28,32 @@ const formSchema = z.object({
   zipCode: z.string().min(1),
 });
 
-export default function AddressForm({
-  address,
-}: {
-  address: shippingAddressType;
-}) {
+export default function AddressForm({ user }: { user: UserType }) {
+  const [addressSaved, setAddressSaved] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: address.firstName || '',
-      lastName: address.lastName || '',
-      email: address.email || '',
-      phone: address.phone || '',
-      address: address.address || '',
-      city: address.city || '',
-      state: address.state || '',
-      zipCode: address.zipCode || '',
+      firstName: user.shippingAddress?.firstName || '',
+      lastName: user.shippingAddress?.lastName || '',
+      email: user.shippingAddress?.email || '',
+      phone: user.shippingAddress?.phone || '',
+      address: user.shippingAddress?.address || '',
+      city: user.shippingAddress?.city || '',
+      state: user.shippingAddress?.state || '',
+      zipCode: user.shippingAddress?.zipCode || '',
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      await saveShippingAddress({ address: values });
-    } catch (error) {
-      console.error('Form submission error', error);
-      toast.error('Failed to submit the form. Please try again.');
-    }
+  async function handleSaveAddress(values: z.infer<typeof formSchema>) {
+    await saveShippingAddress({ address: values });
+    setAddressSaved(true);
   }
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleSaveAddress)}
         className="space-y-8 max-w-5xl mx-auto py-10"
       >
         <div className="grid grid-cols-12 gap-4">
@@ -105,7 +99,6 @@ export default function AddressForm({
             />
           </div>
         </div>
-
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-6">
             <FormField
@@ -145,7 +138,6 @@ export default function AddressForm({
             />
           </div>
         </div>
-
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-6">
             <FormField
@@ -185,7 +177,6 @@ export default function AddressForm({
             />
           </div>
         </div>
-
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-6">
             <FormField
@@ -226,6 +217,7 @@ export default function AddressForm({
           </div>
         </div>
         <Button type="submit">Save Address</Button>
+        {addressSaved && <span className="text-green-600">Address saved!</span>}
       </form>
     </Form>
   );

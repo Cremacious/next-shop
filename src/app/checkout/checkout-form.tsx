@@ -4,7 +4,7 @@ import { saveShippingAddress } from '@/lib/actions/user.actions';
 import { UserType } from '@/lib/types/user.type';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import {  z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import {
@@ -17,7 +17,11 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { CartType } from '@/lib/types/cart.type';
-import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import {
+  PayPalButtons,
+  PayPalScriptProvider,
+  usePayPalScriptReducer,
+} from '@paypal/react-paypal-js';
 
 const formSchema = z.object({
   firstName: z.string().min(1),
@@ -38,6 +42,7 @@ export default function AddressForm({
   cart: CartType;
 }) {
   const [addressSaved, setAddressSaved] = useState(false);
+  const [orderCreated, setOrderCreated] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,27 +58,25 @@ export default function AddressForm({
     },
   });
 
-  //   async function onSubmit(values: z.infer<typeof formSchema>) {
-  //     try {
-  //       await saveShippingAddress({ address: values });
-  //     } catch (error) {
-  //       console.error('Form submission error', error);
-  //       toast.error('Failed to submit the form. Please try again.');
-  //     }
-  //   }
-
   async function handleSaveAddress(values: z.infer<typeof formSchema>) {
     await saveShippingAddress({ address: values });
     setAddressSaved(true);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async function handleApprove(data: any, actions: any) {
-    const shippingAddress = form.getValues(); // Always use current form values
-    // Create order in your DB here, using shippingAddress and cart
-    // Optionally show a confirmation message
-    console.log(data, actions, shippingAddress);
-  }
+  const handleCreatePayPalOrder = async () => {
+    // const res = await createPayPalOrder(order.id);
+    // if (!res.success) return toast.error(res.message);
+    // return res.data;
+  };
+
+  const handleApprovePayPalOrder = async (data: { orderID: string }) => {
+    // const res = await approvePayPalOrder(order.id, data);
+    // toast(res.message);
+  };
+
+  const handleCreateOrder = async () => {
+    setOrderCreated(true);
+  };
 
   return (
     <Form {...form}>
@@ -244,38 +247,23 @@ export default function AddressForm({
         <Button type="submit">Save Address</Button>
         {addressSaved && <span className="text-green-600">Address saved!</span>}
       </form>
-      <div className="mt-8">
-        <PayPalScriptProvider
-          options={{ clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID! }}
-        >
-          <PayPalButtons
-            style={{ layout: 'vertical' }}
-            createOrder={(_, actions) => {
-              return actions.order.create({
-                intent: 'CAPTURE',
-                purchase_units: [
-                  {
-                    amount: {
-                      currency_code: 'USD',
-                      value: cart.totalPrice.toFixed(2),
-                    },
-                    shipping: {
-                      address: {
-                        address_line_1: form.getValues('address'),
-                        admin_area_2: form.getValues('city'),
-                        admin_area_1: form.getValues('state'),
-                        postal_code: form.getValues('zipCode'),
-                        country_code: 'US',
-                      },
-                    },
-                  },
-                ],
-              });
-            }}
-            onApprove={handleApprove}
-          />
-        </PayPalScriptProvider>
+
+      <div>
+        <Button onClick={handleCreateOrder}>Proceed to Payment</Button>
       </div>
+
+      {orderCreated && (
+        <div className="mt-8">
+          <PayPalScriptProvider
+            options={{ clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID! }}
+          >
+            <PayPalButtons
+            // createOrder={handleCreatePayPalOrder}
+            // onApprove={handleApprovePayPalOrder}
+            />
+          </PayPalScriptProvider>
+        </div>
+      )}
     </Form>
   );
 }
