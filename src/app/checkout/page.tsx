@@ -3,8 +3,9 @@ import CheckoutItems from './checkout-items';
 import { getAuthenticatedUser } from '@/lib/server-utils';
 import { redirect } from 'next/navigation';
 import PriceSummary from './price-summary';
-import AddressForm from './address-form';
+// import AddressForm from './address-form';
 import { shippingAddressType } from '@/lib/types/user.type';
+import CheckoutForm from './checkout-form';
 
 export default async function CheckoutPage() {
   const cart = await getUserCart();
@@ -14,6 +15,13 @@ export default async function CheckoutPage() {
     if (typeof window === 'undefined') {
       return redirect('/sign-in');
     }
+  }
+
+  if (!cart || cart.items.length === 0) {
+    if (typeof window === 'undefined') {
+      return redirect('/cart');
+    }
+    return null;
   }
 
   return (
@@ -27,11 +35,12 @@ export default async function CheckoutPage() {
             <div className="md:overflow-auto">
               <CheckoutItems />
               <hr className="border-gray-300 my-6" />
-              <PriceSummary subtotal={cart?.itemsPrice} />
+              <PriceSummary subtotal={cart.itemsPrice} />
             </div>
           </div>
           <div className="w-full h-max rounded-md">
-            <AddressForm address={user?.shippingAddress as shippingAddressType ?? { street: '', city: '', state: '', zip: '' }} />
+            <CheckoutForm shippingAddress={user?.shippingAddress as shippingAddressType | undefined} />
+            {/* <AddressForm address={user?.shippingAddress as shippingAddressType ?? { street: '', city: '', state: '', zip: '' }} />
             <form>
               <div className="mt-10">
                 <h2 className="text-xl text-slate-900 font-semibold mb-6">
@@ -143,7 +152,7 @@ export default async function CheckoutPage() {
                   </button>
                 </div>
               </div>
-            </form>
+            </form> */}
           </div>
         </div>
       </div>

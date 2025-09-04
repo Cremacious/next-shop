@@ -8,3 +8,10 @@ export type shippingAddressType = {
   state: string;
   zipCode: string;
 };
+
+export type userType = {
+  id: string;
+  name: string;
+  email: string;
+  shippingAddress?: shippingAddressType;
+};

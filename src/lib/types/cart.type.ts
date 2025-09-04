@@ -20,3 +20,12 @@ export type CartItemType = {
   quantity: number;
   image?: string;
 };
+
+export type CheckoutCartType = {
+  id: string;
+  userId: string;
+  itemsPrice: number;
+  taxPrice: number;
+  totalPrice: number;
+  createdAt: Date;
+};
