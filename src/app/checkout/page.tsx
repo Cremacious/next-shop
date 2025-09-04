@@ -2,6 +2,8 @@ import { getUserCart } from '@/lib/actions/cart.actions';
 import CheckoutItems from './checkout-items';
 import { getAuthenticatedUser } from '@/lib/server-utils';
 import { redirect } from 'next/navigation';
+import PriceSummary from './price-summary';
+import AddressForm from './address-form';
 
 export default async function CheckoutPage() {
   const cart = await getUserCart();
@@ -24,129 +26,12 @@ export default async function CheckoutPage() {
             <div className="md:overflow-auto">
               <CheckoutItems />
               <hr className="border-gray-300 my-6" />
-              <div className="bg-gray-100 p-6 rounded-md">
-                <ul className="text-slate-500 font-medium space-y-4">
-                  <li className="flex flex-wrap gap-4 text-sm">
-                    Subtotal
-                    <span className="ml-auto font-semibold text-slate-900">
-                      ${cart?.itemsPrice}
-                    </span>
-                  </li>
-                  <li className="flex flex-wrap gap-4 text-sm">
-                    Shipping
-                    <span className="ml-auto font-semibold text-slate-900">
-                      $6.00
-                    </span>
-                  </li>
-                  <li className="flex flex-wrap gap-4 text-sm">
-                    Discount
-                    <span className="ml-auto font-semibold text-slate-900">
-                      $0.00
-                    </span>
-                  </li>
-                  <li className="flex flex-wrap gap-4 text-sm">
-                    Tax
-                    <span className="ml-auto font-semibold text-slate-900">
-                      $5.00
-                    </span>
-                  </li>
-                  <hr className="border-slate-300" />
-                  <li className="flex flex-wrap gap-4 text-[15px] font-semibold text-slate-900">
-                    Total <span className="ml-auto">$113.00</span>
-                  </li>
-                </ul>
-              </div>
+              <PriceSummary subtotal={cart?.itemsPrice} />
             </div>
           </div>
           <div className="w-full h-max rounded-md">
+            <AddressForm />
             <form>
-              <div>
-                <h2 className="text-xl text-slate-900 font-semibold mb-6">
-                  Delivery Details
-                </h2>
-                <div className="grid md:grid-cols-2 gap-y-6 gap-x-4">
-                  <div>
-                    <label className="text-sm text-slate-900 font-medium block mb-2">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter First Name"
-                      className="px-4 py-2.5 bg-white border border-gray-400 text-slate-900 w-full text-sm rounded-md focus:outline-blue-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm text-slate-900 font-medium block mb-2">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Last Name"
-                      className="px-4 py-2.5 bg-white border border-gray-400 text-slate-900 w-full text-sm rounded-md focus:outline-blue-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm text-slate-900 font-medium block mb-2">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      placeholder="Enter Email"
-                      className="px-4 py-2.5 bg-white border border-gray-400 text-slate-900 w-full text-sm rounded-md focus:outline-blue-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm text-slate-900 font-medium block mb-2">
-                      Phone No.
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Enter Phone No."
-                      className="px-4 py-2.5 bg-white border border-gray-400 text-slate-900 w-full text-sm rounded-md focus:outline-blue-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm text-slate-900 font-medium block mb-2">
-                      Address Line
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Address Line"
-                      className="px-4 py-2.5 bg-white border border-gray-400 text-slate-900 w-full text-sm rounded-md focus:outline-blue-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm text-slate-900 font-medium block mb-2">
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter City"
-                      className="px-4 py-2.5 bg-white border border-gray-400 text-slate-900 w-full text-sm rounded-md focus:outline-blue-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm text-slate-900 font-medium block mb-2">
-                      State
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter State"
-                      className="px-4 py-2.5 bg-white border border-gray-400 text-slate-900 w-full text-sm rounded-md focus:outline-blue-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm text-slate-900 font-medium block mb-2">
-                      Zip Code
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Zip Code"
-                      className="px-4 py-2.5 bg-white border border-gray-400 text-slate-900 w-full text-sm rounded-md focus:outline-blue-600"
-                    />
-                  </div>
-                </div>
-              </div>
               <div className="mt-10">
                 <h2 className="text-xl text-slate-900 font-semibold mb-6">
                   Payment
