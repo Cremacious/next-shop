@@ -3,7 +3,7 @@
 import prisma from '../prisma';
 import { cookies } from 'next/headers';
 import { getAuthenticatedUser } from '../server-utils';
-import { CartItemType } from '../types/cart.type';
+import { CartItemType, CartType } from '../types/cart.type';
 import { convertToPlainObject } from '../utils';
 
 export async function addItemToCartServer(cartItems: CartItemType[]) {
@@ -75,6 +75,26 @@ export async function getUserCart() {
     );
     return { items, itemsPrice, taxPrice: 0, totalPrice: 0 };
   }
+}
+
+export async function getCheckoutCart(): Promise<CartType | null> {
+  const { user } = await getAuthenticatedUser();
+  if (!user) return null;
+
+  const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
+  if (!cart) return null;
+
+  const items: CartItemType[] = Array.isArray(cart.items)
+    ? (cart.items as CartItemType[])
+    : [];
+
+  return {
+    ...cart,
+    items,
+    itemsPrice: Number(cart.itemsPrice),
+    taxPrice: Number(cart.taxPrice),
+    totalPrice: Number(cart.totalPrice),
+  };
 }
 
 export async function updateItemQuantityServer(cartItems: CartItemType[]) {

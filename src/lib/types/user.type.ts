@@ -9,9 +9,13 @@ export type shippingAddressType = {
   zipCode: string;
 };
 
-export type userType = {
+export type UserType = {
   id: string;
-  name: string;
   email: string;
-  shippingAddress?: shippingAddressType;
+  name: string;
+  emailVerified: boolean;
+  image: string | null;
+  shippingAddress: shippingAddressType | null; // or JsonValue if you want to be more flexible
+  createdAt: Date;
+  updatedAt: Date;
 };

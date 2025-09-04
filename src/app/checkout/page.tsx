@@ -1,14 +1,14 @@
-import { getUserCart } from '@/lib/actions/cart.actions';
-import CheckoutItems from './checkout-items';
+import { getCheckoutCart } from '@/lib/actions/cart.actions';
+// import CheckoutItems from './checkout-items';
 import { getAuthenticatedUser } from '@/lib/server-utils';
 import { redirect } from 'next/navigation';
 import PriceSummary from './price-summary';
 // import AddressForm from './address-form';
-import { shippingAddressType } from '@/lib/types/user.type';
+import { UserType } from '@/lib/types/user.type';
 import CheckoutForm from './checkout-form';
 
 export default async function CheckoutPage() {
-  const cart = await getUserCart();
+  const cart = await getCheckoutCart();
   const { user } = await getAuthenticatedUser();
 
   if (!user) {
@@ -17,12 +17,27 @@ export default async function CheckoutPage() {
     }
   }
 
-  if (!cart || cart.items.length === 0) {
+  if (
+    cart === null ||
+    cart === undefined ||
+    !Array.isArray(cart.items) ||
+    cart.items.length === 0
+  ) {
     if (typeof window === 'undefined') {
       return redirect('/cart');
     }
     return null;
   }
+
+  const shippingAddress =
+    typeof user?.shippingAddress === 'string'
+      ? JSON.parse(user.shippingAddress)
+      : user?.shippingAddress ?? null;
+
+  const checkoutUser: UserType = {
+    ...(user as UserType),
+    shippingAddress: shippingAddress,
+  };
 
   return (
     <div className="max-w-7xl mx-auto bg-gray-50 p-6">
@@ -33,13 +48,13 @@ export default async function CheckoutPage() {
         <div className="space-y-12 ">
           <div className="relative">
             <div className="md:overflow-auto">
-              <CheckoutItems />
+              {/* <CheckoutItems /> */}
               <hr className="border-gray-300 my-6" />
-              <PriceSummary subtotal={cart.itemsPrice} />
+              <PriceSummary cart={cart} />
             </div>
           </div>
           <div className="w-full h-max rounded-md">
-            <CheckoutForm shippingAddress={user?.shippingAddress as shippingAddressType | undefined} />
+            <CheckoutForm cart={cart} user={checkoutUser} />
             {/* <AddressForm address={user?.shippingAddress as shippingAddressType ?? { street: '', city: '', state: '', zip: '' }} />
             <form>
               <div className="mt-10">

@@ -1,105 +1,234 @@
 'use client';
-import { useState } from 'react';
+
 import { saveShippingAddress } from '@/lib/actions/user.actions';
-import { shippingAddressType } from '@/lib/types/user.type';
-// import { CheckoutCartType } from '@/lib/types/cart.type';
-// import { userType } from '@/lib/types/user.type';
+import { UserType } from '@/lib/types/user.type';
+import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { CartType } from '@/lib/types/cart.type';
+// import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
-export default function CheckoutForm({
-  shippingAddress,
+const formSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  email: z.string(),
+  phone: z.string().min(1, 'Phone is required'),
+  address: z.string().min(1),
+  city: z.string().min(1),
+  state: z.string().min(1),
+  zipCode: z.string().min(1),
+});
+
+export default function AddressForm({
+  user,
+  cart,
 }: {
-  shippingAddress: shippingAddressType | undefined;
+  user: UserType;
+  cart: CartType;
 }) {
-  const [address, setAddress] = useState<shippingAddressType>(
-    shippingAddress ?? {
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      address: '',
-      city: '',
-      state: '',
-      zipCode: '',
-    }
-  );
-  const [payment, setPayment] = useState({
-    method: 'card',
-    cardName: '',
-    cardNumber: '',
-    expiry: '',
-    cvv: '',
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: user.shippingAddress?.firstName || '',
+      lastName: user.shippingAddress?.lastName || '',
+      email: user.shippingAddress?.email || '',
+      phone: user.shippingAddress?.phone || '',
+      address: user.shippingAddress?.address || '',
+      city: user.shippingAddress?.city || '',
+      state: user.shippingAddress?.state || '',
+      zipCode: user.shippingAddress?.zipCode || '',
+    },
   });
-  const [savingAddress, setSavingAddress] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
 
-  // Save address to user profile (optional)
-  async function handleSaveAddress() {
-    setSavingAddress(true);
-    await saveShippingAddress({ address });
-    setSavingAddress(false);
-  }
-
-  // Create order using current form values
-  async function handleCompletePurchase() {
-    setSubmitting(true);
-    // await createOrder({
-    //   userId: user.id,
-    //   cart,
-    //   address,
-    //   paymentMethod: payment.method,
-    //   itemsPrice: cart.itemsPrice,
-    //   // ...other fields
-    // });
-    setSubmitting(false);
-    // Optionally redirect or show confirmation
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await saveShippingAddress({ address: values });
+    } catch (error) {
+      console.error('Form submission error', error);
+      toast.error('Failed to submit the form. Please try again.');
+    }
   }
 
   return (
-    <form className="space-y-8">
-      {/* Address fields */}
-      <div>
-        <input
-          value={address.firstName}
-          onChange={(e) =>
-            setAddress((a) => ({ ...a, firstName: e.target.value }))
-          }
-          placeholder="First Name"
-        />
-        {/* ...other address fields... */}
-      </div>
-      <button
-        type="button"
-        onClick={handleSaveAddress}
-        disabled={savingAddress}
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8 max-w-5xl mx-auto py-10"
       >
-        {savingAddress ? 'Saving...' : 'Save Address'}
-      </button>
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter First Name"
+                      type="text"
+                      {...field}
+                    />
+                  </FormControl>
 
-      {/* Payment fields */}
-      <div>
-        <input
-          value={payment.cardName}
-          onChange={(e) =>
-            setPayment((p) => ({ ...p, cardName: e.target.value }))
-          }
-          placeholder="Cardholder's Name"
-        />
-        {/* ...other payment fields... */}
-      </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-      {/* Order summary */}
-      <div>
-        {/* <span>Subtotal: ${cart.itemsPrice}</span> */}
-        {/* ...tax, total, etc... */}
-      </div>
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter Last Name"
+                      type="text"
+                      {...field}
+                    />
+                  </FormControl>
 
-      <button
-        type="button"
-        onClick={handleCompletePurchase}
-        disabled={submitting}
-      >
-        {submitting ? 'Processing...' : 'Complete Purchase'}
-      </button>
-    </form>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter Email" type="email" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter Phone Number"
+                      type="text"
+                      {...field}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter Your Address"
+                      type="text"
+                      {...field}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>City</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter City" type="text" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="state"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>State</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter State" type="text" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="zipCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Zip Code</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter Zip Code"
+                      type="text"
+                      {...field}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>{' '}
+        {cart.itemsPrice}
+        <Button type="submit">Save Address</Button>
+      </form>
+    </Form>
   );
 }
