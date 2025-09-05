@@ -1,29 +1,29 @@
-import { getCheckoutCart } from '@/lib/actions/cart.actions';
+// import { getCheckoutCart } from '@/lib/actions/cart.actions';
 import { getAuthenticatedUser } from '@/lib/server-utils';
 import { redirect } from 'next/navigation';
 import { UserType } from '@/lib/types/user.type';
 import CheckoutForm from './checkout-form';
+import { getOrderById } from '@/lib/actions/order.actions';
 
-export default async function CheckoutPage() {
-  const cart = await getCheckoutCart();
+export default async function CheckoutPage({
+  params,
+}: {
+  params: Promise<{ orderId: string }>;
+}) {
+  const { orderId } = await params;
+  const existingOrder = await getOrderById(orderId);
+
+  if (!existingOrder) {
+    if (typeof window === 'undefined') {
+      return redirect(`/cart`);
+    }
+  }
   const { user } = await getAuthenticatedUser();
 
   if (!user) {
     if (typeof window === 'undefined') {
       return redirect('/sign-in');
     }
-  }
-
-  if (
-    cart === null ||
-    cart === undefined ||
-    !Array.isArray(cart.items) ||
-    cart.items.length === 0
-  ) {
-    if (typeof window === 'undefined') {
-      return redirect('/cart');
-    }
-    return null;
   }
 
   const shippingAddress =
@@ -41,7 +41,7 @@ export default async function CheckoutPage() {
       <div className="max-w-4xl mx-auto bg-gray-50 p-6">
         <div className="space-y-12 ">
           <div className="w-full h-max rounded-md">
-            <CheckoutForm cart={cart} user={checkoutUser} />
+            <CheckoutForm orderId={orderId} user={checkoutUser} />
           </div>
         </div>
       </div>

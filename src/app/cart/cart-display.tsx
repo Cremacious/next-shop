@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import CartItemCard from '@/components/cart/cart-item-card';
 import { createOrder } from '@/lib/actions/order.actions';
+import { useState } from 'react';
 
 export default function CartDisplay({}) {
   const cart = useCartStore((state) => state.cart);
   const updateItemQuantity = useCartStore((state) => state.updateItemQuantity);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const router = useRouter();
+  const [creatingOrder, setCreatingOrder] = useState(false);
 
   const handleQuantityChange = async (
     id: string,
@@ -35,10 +37,14 @@ export default function CartDisplay({}) {
 
   const handleCheckout = async () => {
     try {
-      await createOrder();
-      router.push(`/checkout`);
+      setCreatingOrder(true);
+      const response = await createOrder();
+      const orderId = response.id;
+      router.push(`/checkout/${orderId}`);
+      // setCreatingOrder(false);
     } catch (error) {
       console.error('Error creating order:', error);
+      setCreatingOrder(false);
     }
   };
 
@@ -93,7 +99,7 @@ export default function CartDisplay({}) {
               onClick={handleCheckout}
               className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition mb-2"
             >
-              Proceed to Checkout
+              {creatingOrder ? 'Processing...' : 'Go to Checkout'}
             </button>
             <Link
               href="/products"

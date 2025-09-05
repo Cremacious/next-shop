@@ -1,15 +1,15 @@
 'use client';
 
-import { CartType } from '@/lib/types/cart.type';
+// import { CartType } from '@/lib/types/cart.type';
 
-export default function PriceSummary({ cart }: { cart: CartType }) {
+export default function PriceSummary() {
   return (
     <div className="bg-gray-100 p-6 rounded-md">
       <ul className="text-slate-500 font-medium space-y-4">
         <li className="flex flex-wrap gap-4 text-sm">
           Subtotal
           <span className="ml-auto font-semibold text-slate-900">
-            ${cart.itemsPrice}
+            {/* ${cart.itemsPrice} */}
           </span>
         </li>
         <li className="flex flex-wrap gap-4 text-sm">

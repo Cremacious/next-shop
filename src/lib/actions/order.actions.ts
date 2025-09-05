@@ -33,7 +33,7 @@ export async function createOrder() {
         },
       },
       include: {
-        orderItems: true, 
+        orderItems: true,
       },
     });
 
@@ -50,5 +50,40 @@ export async function createOrder() {
   } catch (error) {
     console.error('Error creating order:', error);
     throw new Error('Failed to create order');
+  }
+}
+
+export async function getOrderById(orderId: string) {
+  try {
+    const { user } = await getAuthenticatedUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const order = await prisma.order.findFirst({
+      where: {
+        id: orderId,
+        userId: user.id,
+      },
+      include: {
+        orderItems: true,
+      },
+    });
+
+    if (!order) {
+      throw new Error('Order not found');
+    }
+
+    return {
+      ...order,
+      itemsPrice: Number(order.itemsPrice),
+      taxPrice: Number(order.taxPrice),
+      totalPrice: Number(order.totalPrice),
+      orderItems: order.orderItems.map((item) => ({
+        ...item,
+        price: Number(item.price),
+      })),
+    };
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    throw new Error('Failed to fetch order');
   }
 }

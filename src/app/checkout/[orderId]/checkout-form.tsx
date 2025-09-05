@@ -1,22 +1,23 @@
 'use client';
 
 import { UserType } from '@/lib/types/user.type';
-import { CartType } from '@/lib/types/cart.type';
+// import { CartType } from '@/lib/types/cart.type';
 import { useState } from 'react';
 import AddressForm from './address-form';
 import PayPal from './paypal';
-import PriceSummary from './price-summary';
+import PriceSummary from '@/app/checkout/[orderId]/price-summary';
 
 export default function CheckoutForm({
   user,
-  cart,
+  orderId,
 }: {
   user: UserType;
-  cart: CartType;
+  orderId: string;
 }) {
   const [showAddressForm, setShowAddressForm] = useState(true);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   // const [showOrderConfirmation, setShowOrderConfirmation] = useState(false);
+  console.log(orderId);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -84,7 +85,7 @@ export default function CheckoutForm({
         )}
         {showPaymentForm && (
           <div className="w-full mx-auto max-w-3xl">
-            <PriceSummary cart={cart} />
+            <PriceSummary />
             <PayPal />
           </div>
         )}
