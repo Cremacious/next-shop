@@ -97,6 +97,26 @@ export async function getCheckoutCart(): Promise<CartType | null> {
   };
 }
 
+export async function getCartForOrder() {
+  const { user } = await getAuthenticatedUser();
+  if (!user) return null;
+
+  const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
+  if (!cart) return null;
+
+  const items: CartItemType[] = Array.isArray(cart.items)
+    ? (cart.items as CartItemType[])
+    : [];
+
+  return {
+    ...cart,
+    items,
+    itemsPrice: Number(cart.itemsPrice),
+    taxPrice: Number(cart.taxPrice),
+    totalPrice: Number(cart.totalPrice),
+  };
+}
+
 export async function updateItemQuantityServer(cartItems: CartItemType[]) {
   try {
     const { user } = await getAuthenticatedUser();

@@ -3,6 +3,7 @@ import { useCartStore } from '@/stores/useCartStore';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import CartItemCard from '@/components/cart/cart-item-card';
+import { createOrder } from '@/lib/actions/order.actions';
 
 export default function CartDisplay({}) {
   const cart = useCartStore((state) => state.cart);
@@ -31,6 +32,15 @@ export default function CartDisplay({}) {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+
+  const handleCheckout = async () => {
+    try {
+      await createOrder();
+      router.push(`/checkout`);
+    } catch (error) {
+      console.error('Error creating order:', error);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 bg-gray-50 min-h-screen">
@@ -80,7 +90,7 @@ export default function CartDisplay({}) {
               <span>${subtotal.toFixed(2)}</span>
             </div>
             <button
-              onClick={() => router.push('/checkout')}
+              onClick={handleCheckout}
               className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition mb-2"
             >
               Proceed to Checkout

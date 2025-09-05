@@ -1,269 +1,94 @@
 'use client';
 
-import { saveShippingAddress } from '@/lib/actions/user.actions';
 import { UserType } from '@/lib/types/user.type';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {  z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { CartType } from '@/lib/types/cart.type';
-import {
-  PayPalButtons,
-  PayPalScriptProvider,
-  usePayPalScriptReducer,
-} from '@paypal/react-paypal-js';
+import { useState } from 'react';
+import AddressForm from './address-form';
+import PayPal from './paypal';
+import PriceSummary from './price-summary';
 
-const formSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  email: z.string(),
-  phone: z.string().min(1, 'Phone is required'),
-  address: z.string().min(1),
-  city: z.string().min(1),
-  state: z.string().min(1),
-  zipCode: z.string().min(1),
-});
-
-export default function AddressForm({
+export default function CheckoutForm({
   user,
   cart,
 }: {
   user: UserType;
   cart: CartType;
 }) {
-  const [addressSaved, setAddressSaved] = useState(false);
-  const [orderCreated, setOrderCreated] = useState(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: user.shippingAddress?.firstName || '',
-      lastName: user.shippingAddress?.lastName || '',
-      email: user.shippingAddress?.email || '',
-      phone: user.shippingAddress?.phone || '',
-      address: user.shippingAddress?.address || '',
-      city: user.shippingAddress?.city || '',
-      state: user.shippingAddress?.state || '',
-      zipCode: user.shippingAddress?.zipCode || '',
-    },
-  });
-
-  async function handleSaveAddress(values: z.infer<typeof formSchema>) {
-    await saveShippingAddress({ address: values });
-    setAddressSaved(true);
-  }
-
-  const handleCreatePayPalOrder = async () => {
-    // const res = await createPayPalOrder(order.id);
-    // if (!res.success) return toast.error(res.message);
-    // return res.data;
-  };
-
-  const handleApprovePayPalOrder = async (data: { orderID: string }) => {
-    // const res = await approvePayPalOrder(order.id, data);
-    // toast(res.message);
-  };
-
-  const handleCreateOrder = async () => {
-    setOrderCreated(true);
-  };
+  const [showAddressForm, setShowAddressForm] = useState(true);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  // const [showOrderConfirmation, setShowOrderConfirmation] = useState(false);
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSaveAddress)}
-        className="space-y-8 max-w-5xl mx-auto py-10"
-      >
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter First Name"
-                      type="text"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter Last Name"
-                      type="text"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter Email" type="email" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter Phone Number"
-                      type="text"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Address</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter Your Address"
-                      type="text"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter City" type="text" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="state"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>State</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter State" type="text" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="zipCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Zip Code</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter Zip Code"
-                      type="text"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
-        <Button type="submit">Save Address</Button>
-        {addressSaved && <span className="text-green-600">Address saved!</span>}
-      </form>
-
+    <div className="flex flex-col min-h-screen">
+      {/* steps */}
       <div>
-        <Button onClick={handleCreateOrder}>Proceed to Payment</Button>
+        <h2 className="sr-only">Steps</h2>
+
+        <div className="relative after:absolute after:inset-x-0 after:top-1/2 after:block after:h-0.5 after:-translate-y-1/2 after:rounded-lg after:bg-gray-100">
+          <ol className="relative z-10 flex justify-between text-sm font-medium text-gray-500">
+            {showAddressForm ? (
+              <li className="flex items-center gap-2  p-2">
+                <span className="size-6 rounded-full bg-blue-600 text-center text-[10px]/6 font-bold text-white">
+                  {' '}
+                  1{' '}
+                </span>
+                <span className="hidden sm:block"> Address </span>
+              </li>
+            ) : (
+              <li className="flex items-center gap-2 p-2">
+                <span className="size-6 rounded-full bg-gray-100 text-center text-[10px]/6 font-bold">
+                  {' '}
+                  1{' '}
+                </span>
+                <span className="hidden sm:block"> Address </span>
+              </li>
+            )}
+            {showPaymentForm ? (
+              <li className="flex items-center gap-2 p-2">
+                <span className="bg-blue-600 text-white size-6 rounded-full text-center text-[10px]/6 font-bold ">
+                  2
+                </span>
+
+                <span className="hidden sm:block"> Payment </span>
+              </li>
+            ) : (
+              <li className="flex items-center gap-2 p-2">
+                <span className="size-6 rounded-full text-center text-[10px]/6 font-bold ">
+                  2
+                </span>
+
+                <span className="hidden sm:block"> Payment </span>
+              </li>
+            )}
+
+            <li className="flex items-center gap-2  p-2">
+              <span className="size-6 rounded-full bg-gray-100 text-center text-[10px]/6 font-bold">
+                {' '}
+                3{' '}
+              </span>
+
+              <span className="hidden sm:block"> Order Confirmation </span>
+            </li>
+          </ol>
+        </div>
       </div>
 
-      {orderCreated && (
-        <div className="mt-8">
-          <PayPalScriptProvider
-            options={{ clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID! }}
-          >
-            <PayPalButtons
-            // createOrder={handleCreatePayPalOrder}
-            // onApprove={handleApprovePayPalOrder}
-            />
-          </PayPalScriptProvider>
-        </div>
-      )}
-    </Form>
+      <div className="flex-1 flex flex-col justify-center items-center">
+        <div className="text-lg font-bold mt-4 mb-8">Checkout</div>
+        {showAddressForm && (
+          <AddressForm
+            setShowPaymentForm={setShowPaymentForm}
+            setShowAddressForm={setShowAddressForm}
+            user={user}
+          />
+        )}
+        {showPaymentForm && (
+          <div className="w-full mx-auto max-w-3xl">
+            <PriceSummary cart={cart} />
+            <PayPal />
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
