@@ -3,8 +3,9 @@ import { useCartStore } from '@/stores/useCartStore';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import CartItemCard from '@/components/cart/cart-item-card';
-import { createOrder } from '@/lib/actions/order.actions';
+import { createOrUpdatePendingOrder } from '@/lib/actions/order.actions';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 export default function CartDisplay({}) {
   const cart = useCartStore((state) => state.cart);
@@ -38,7 +39,7 @@ export default function CartDisplay({}) {
   const handleCheckout = async () => {
     try {
       setCreatingOrder(true);
-      const response = await createOrder();
+      const response = await createOrUpdatePendingOrder();
       const orderId = response.id;
       router.push(`/checkout/${orderId}`);
       // setCreatingOrder(false);
@@ -95,12 +96,17 @@ export default function CartDisplay({}) {
               <span>Subtotal</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
-            <button
+            <Button
+              disabled={creatingOrder}
               onClick={handleCheckout}
-              className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition mb-2"
+              className={`w-full   ${
+                creatingOrder
+                  ? 'bg-gray-300 text-black'
+                  : 'bg-blue-600 text-white'
+              } px-6 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition mb-2`}
             >
-              {creatingOrder ? 'Processing...' : 'Go to Checkout'}
-            </button>
+              {creatingOrder ? 'Creating Order...' : 'Go to Checkout'}
+            </Button>
             <Link
               href="/products"
               className="block text-center text-blue-600 hover:underline mt-2"
