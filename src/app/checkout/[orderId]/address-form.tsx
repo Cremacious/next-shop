@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { updateOrderAddress } from '@/lib/actions/order.actions';
 
 const formSchema = z.object({
   firstName: z.string().min(1),
@@ -29,10 +30,12 @@ const formSchema = z.object({
 });
 
 export default function AddressForm({
+  orderId,
   user,
   setShowAddressForm,
   setShowPaymentForm,
 }: {
+  orderId: string;
   user: UserType;
   setShowAddressForm: (value: boolean) => void;
   setShowPaymentForm: (value: boolean) => void;
@@ -58,9 +61,20 @@ export default function AddressForm({
     setAddressSaved(true);
   }
 
-  const handleContinueToPayment = () => {
-    setShowAddressForm(false);
-    setShowPaymentForm(true);
+  const handleContinueToPayment = async () => {
+    try {
+      const values = form.getValues();
+      const response = await updateOrderAddress(
+        orderId,
+        JSON.stringify(values)
+      );
+      if (response.status === 'success') {
+        setShowAddressForm(false);
+        setShowPaymentForm(true);
+      }
+    } catch (error) {
+      console.error('Error updating order address:', error);
+    }
   };
 
   return (

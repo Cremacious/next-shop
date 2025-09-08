@@ -191,3 +191,30 @@ export async function getOrderById(orderId: string) {
     throw new Error('Failed to fetch order');
   }
 }
+
+export async function updateOrderAddress(orderId: string, address: string) {
+  try {
+    const { user } = await getAuthenticatedUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const order = await prisma.order.findFirst({
+      where: {
+        id: orderId,
+        userId: user.id,
+        status: 'pending',
+      },
+    });
+
+    if (!order) throw new Error('Order not found');
+
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { shippingAddress: address },
+    });
+
+    return { status: 'success', message: 'Address updated' };
+  } catch (error) {
+    console.error('Error updating order address:', error);
+    throw new Error('Failed to update order address');
+  }
+}

@@ -78,6 +78,7 @@ export default function CheckoutForm({
         <div className="text-lg font-bold mt-4 mb-8">Checkout</div>
         {showAddressForm && (
           <AddressForm
+            orderId={orderId}
             setShowPaymentForm={setShowPaymentForm}
             setShowAddressForm={setShowAddressForm}
             user={user}
