@@ -12,6 +12,7 @@ export default function StripeProvider({
   amount,
   customerEmail,
   shippingAddress,
+  orderId,
 }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
 any) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -20,11 +21,11 @@ any) {
     fetch('/api/create-payment-intent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount, customerEmail, shippingAddress }),
+      body: JSON.stringify({ amount, customerEmail, shippingAddress, orderId }),
     })
       .then((res) => res.json())
       .then((data) => setClientSecret(data.clientSecret));
-  }, [amount, customerEmail, shippingAddress]);
+  }, [amount, customerEmail, shippingAddress, orderId]);
 
   if (!clientSecret) return <div>Loading payment form…</div>;
 

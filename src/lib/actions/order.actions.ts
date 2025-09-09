@@ -219,4 +219,35 @@ export async function updateOrderAddress(orderId: string, address: string) {
   }
 }
 
+export async function updateOrderPayment(
+  orderId: string, paymentIntent: string
+) {
+  try {
+    const { user } = await getAuthenticatedUser();
+    if (!user) throw new Error('User not authenticated');
 
+    const order = await prisma.order.findFirst({
+      where: {
+        id: orderId,
+        userId: user.id,
+        status: 'pending',
+      },
+    });
+
+    if (!order) throw new Error('Order not found');
+
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        isPaid: true,
+        paidAt: new Date(),
+        status: 'isCreated',
+        paymentIntent: paymentIntent,
+      },
+    });
+    return { status: 'success', message: 'Order updated' };
+  } catch (error) {
+    console.error('Error updating order payment method:', error);
+    throw new Error('Failed to update order payment method');
+  }
+}

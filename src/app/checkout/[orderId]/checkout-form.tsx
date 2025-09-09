@@ -94,13 +94,14 @@ export default function CheckoutForm({
           />
         )}
         {showPaymentForm && (
-          <div className="w-full mx-auto max-w-3xl bg-red-500">
+          <div className="w-full mx-auto max-w-3xl">
             {showPaymentForm && (
               <div className="w-full mx-auto max-w-3xl">
                 <StripeProvider
                   amount={amount}
                   customerEmail={user.email}
                   shippingAddress={shippingAddress}
+                  orderId={orderId}
                 />
               </div>
             )}

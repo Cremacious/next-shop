@@ -1,10 +1,12 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(request: NextRequest) {
   try {
-    const { amount, customerEmail, shippingAddress } = await request.json();
+    const { amount, customerEmail, shippingAddress, orderId } =
+      await request.json();
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
@@ -21,6 +23,7 @@ export async function POST(request: NextRequest) {
           country: shippingAddress.country,
         },
       },
+      metadata: { orderId },
     });
 
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
