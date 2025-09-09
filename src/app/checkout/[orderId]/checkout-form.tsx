@@ -1,11 +1,10 @@
 'use client';
 
 import { UserType } from '@/lib/types/user.type';
-// import { CartType } from '@/lib/types/cart.type';
 import { useState } from 'react';
 import AddressForm from './address-form';
-import PayPal from './paypal';
 import PriceSummary from '@/app/checkout/[orderId]/price-summary';
+import StripeProvider from './stripe-provider';
 
 export default function CheckoutForm({
   user,
@@ -87,7 +86,7 @@ export default function CheckoutForm({
         {showPaymentForm && (
           <div className="w-full mx-auto max-w-3xl">
             <PriceSummary />
-            <PayPal />
+            <StripeProvider amount={5000} customerEmail={user.email} />
           </div>
         )}
       </div>
