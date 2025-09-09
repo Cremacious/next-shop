@@ -3,60 +3,7 @@
 import prisma from '../prisma';
 import { getAuthenticatedUser } from '../server-utils';
 import { getCartForOrder } from './cart.actions';
-
-// export async function createOrder() {
-//   try {
-//     const { user } = await getAuthenticatedUser();
-//     if (!user) throw new Error('User not authenticated');
-//     const cart = await getCartForOrder();
-//     if (!cart || !cart.items || cart.items.length === 0)
-//       throw new Error('Cart is empty');
-
-//     const itemsPrice = cart.items.reduce(
-//       (sum, item) => sum + item.price * item.quantity,
-//       0
-//     );
-
-//     const order = await prisma.order.create({
-//       data: {
-//         userId: user.id,
-//         itemsPrice,
-//         shippingAddress: '',
-//         paymentMethod: '',
-//         taxPrice: cart.taxPrice || 0,
-//         totalPrice: cart.totalPrice || 0,
-//         orderItems: {
-//           create: cart.items.map((item) => ({
-//             productId: item.id,
-//             name: item.name,
-//             price: item.price,
-//             color: item.color,
-//             size: item.size,
-//             quantity: item.quantity,
-//             image: item.image || '',
-//           })),
-//         },
-//       },
-//       include: {
-//         orderItems: true,
-//       },
-//     });
-
-//     return {
-//       ...order,
-//       itemsPrice: Number(order.itemsPrice),
-//       taxPrice: Number(order.taxPrice),
-//       totalPrice: Number(order.totalPrice),
-//       orderItems: order.orderItems.map((item) => ({
-//         ...item,
-//         price: Number(item.price),
-//       })),
-//     };
-//   } catch (error) {
-//     console.error('Error creating order:', error);
-//     throw new Error('Failed to create order');
-//   }
-// }
+import { clearCartServer } from './cart.actions';
 
 export async function createOrUpdatePendingOrder() {
   try {
@@ -220,7 +167,8 @@ export async function updateOrderAddress(orderId: string, address: string) {
 }
 
 export async function updateOrderPayment(
-  orderId: string, paymentIntent: string
+  orderId: string,
+  paymentIntent: string
 ) {
   try {
     const { user } = await getAuthenticatedUser();
@@ -245,9 +193,39 @@ export async function updateOrderPayment(
         paymentIntent: paymentIntent,
       },
     });
+
+    await clearCartServer();
+
     return { status: 'success', message: 'Order updated' };
   } catch (error) {
     console.error('Error updating order payment method:', error);
     throw new Error('Failed to update order payment method');
+  }
+}
+
+export async function getAllOrders() {
+  try {
+    const orders = await prisma.order.findMany({
+      where: {
+        status: {
+          in: ['isCreated', 'completed'],
+        },
+        isPaid: true,
+      },
+      include: { orderItems: true },
+    });
+    return orders.map((order) => ({
+      ...order,
+      itemsPrice: Number(order.itemsPrice),
+      taxPrice: Number(order.taxPrice),
+      totalPrice: Number(order.totalPrice),
+      orderItems: order.orderItems.map((item) => ({
+        ...item,
+        price: Number(item.price),
+      })),
+    }));
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    throw new Error('Failed to fetch orders');
   }
 }

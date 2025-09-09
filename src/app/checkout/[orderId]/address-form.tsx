@@ -34,11 +34,13 @@ export default function AddressForm({
   user,
   setShowAddressForm,
   setShowPaymentForm,
+  shippingAddress
 }: {
   orderId: string;
   user: UserType;
   setShowAddressForm: (value: boolean) => void;
   setShowPaymentForm: (value: boolean) => void;
+  shippingAddress: (value: string) => void;
 }) {
   const [addressSaved, setAddressSaved] = useState(false);
 
@@ -71,6 +73,7 @@ export default function AddressForm({
       if (response.status === 'success') {
         setShowAddressForm(false);
         setShowPaymentForm(true);
+        shippingAddress(JSON.stringify(values));
       }
     } catch (error) {
       console.error('Error updating order address:', error);

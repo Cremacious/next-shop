@@ -272,3 +272,14 @@ export async function removeItemFromCartServer(cartItems: CartItemType[]) {
     console.error('Error removing item from cart:', error);
   }
 }
+
+export async function clearCartServer() {
+  try {
+    const { user } = await getAuthenticatedUser();
+    if (!user) return;
+
+    await prisma.cart.deleteMany({ where: { userId: user.id } });
+  } catch (error) {
+    console.error('Error clearing cart:', error);
+  }
+}

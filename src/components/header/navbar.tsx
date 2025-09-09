@@ -43,7 +43,7 @@ export default function Navbar() {
           <Link href="/">Home</Link>
           <Link href="/products">Products</Link>
           <Link href="/categories">Categories</Link>
-          <Link href="/about">About</Link>
+          <Link href="/orders">Orders</Link>
           <Link href="/contact">Contact</Link>
         </div>
         {session?.user && (

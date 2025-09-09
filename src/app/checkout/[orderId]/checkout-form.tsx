@@ -16,17 +16,10 @@ export default function CheckoutForm({
 }) {
   const [showAddressForm, setShowAddressForm] = useState(true);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [shippingAddress, setShippingAddress] = useState('');
 
   const amount = Math.round(49.99 * 100);
-  const shippingAddress = {
-    name: user.name || user.email, // or any string
-    line1: '123 Main St',
-    line2: 'Apt 4B',
-    city: 'New York',
-    state: 'NY',
-    postal_code: '10001',
-    country: 'US',
-  };
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -88,6 +81,7 @@ export default function CheckoutForm({
         {showAddressForm && (
           <AddressForm
             orderId={orderId}
+            shippingAddress={setShippingAddress}
             setShowPaymentForm={setShowPaymentForm}
             setShowAddressForm={setShowAddressForm}
             user={user}

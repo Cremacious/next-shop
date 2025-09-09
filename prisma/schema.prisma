@@ -12,6 +12,7 @@ model User {
   name          String
   email         String
   emailVerified Boolean
+  role          String    @default("user")
   image         String?
   shippingAddress Json?   @db.Json 
   createdAt     DateTime
@@ -70,7 +71,6 @@ model Verification {
 
   @@map("verification")
 }
-
 
 
 model Product {
