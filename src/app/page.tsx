@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import Test from './test';
 
 export default function Home() {
   return (
@@ -61,7 +60,6 @@ export default function Home() {
           </a>
         </div>
       </main>
-      <Test />
     </div>
   );
 }
