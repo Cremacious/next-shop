@@ -1,10 +1,11 @@
 'use client';
 
 import { UserType } from '@/lib/types/user.type';
-import { useState } from 'react';
+
 import AddressForm from './address-form';
-import PriceSummary from '@/app/checkout/[orderId]/price-summary';
+import { useState } from 'react';
 import StripeProvider from './stripe-provider';
+// import PriceSummary from '@/app/checkout/[orderId]/price-summary';
 
 export default function CheckoutForm({
   user,
@@ -15,8 +16,17 @@ export default function CheckoutForm({
 }) {
   const [showAddressForm, setShowAddressForm] = useState(true);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  // const [showOrderConfirmation, setShowOrderConfirmation] = useState(false);
-  console.log(orderId);
+
+  const amount = Math.round(49.99 * 100);
+  const shippingAddress = {
+    name: user.name || user.email, // or any string
+    line1: '123 Main St',
+    line2: 'Apt 4B',
+    city: 'New York',
+    state: 'NY',
+    postal_code: '10001',
+    country: 'US',
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -84,9 +94,16 @@ export default function CheckoutForm({
           />
         )}
         {showPaymentForm && (
-          <div className="w-full mx-auto max-w-3xl">
-            <PriceSummary />
-            <StripeProvider amount={5000} customerEmail={user.email} />
+          <div className="w-full mx-auto max-w-3xl bg-red-500">
+            {showPaymentForm && (
+              <div className="w-full mx-auto max-w-3xl">
+                <StripeProvider
+                  amount={amount}
+                  customerEmail={user.email}
+                  shippingAddress={shippingAddress}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
