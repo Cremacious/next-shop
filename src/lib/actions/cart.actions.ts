@@ -239,8 +239,9 @@ export async function removeItemFromCartServer(cartItems: CartItemType[]) {
 
     if (user) {
       const cart = await prisma.cart.findFirst({ where: { userId: user.id } });
+      if (!cart) return;
       await prisma.cart.upsert({
-        where: cart ? { id: cart.id } : { id: '' },
+        where: { userId: user.id },
         update: { items: convertToPlainObject(cartItems) },
         create: {
           userId: user.id,
@@ -251,7 +252,7 @@ export async function removeItemFromCartServer(cartItems: CartItemType[]) {
         },
       });
       await prisma.cart.upsert({
-        where: cart ? { id: cart.id } : { id: '' },
+        where: { userId: user.id },
         update: {
           items: convertToPlainObject(cartItems),
           itemsPrice,
